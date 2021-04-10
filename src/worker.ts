@@ -48,7 +48,6 @@ self.addEventListener(
 					name: "repl-plugin",
 					async resolveId(importee: string, importer: string) {
 						// handle imports from 'svelte'
-						console.log({importee})
 
 						// import x from 'svelte'
 						if (importee === "svelte") return `${CDN_URL}/svelte/index.mjs`;
