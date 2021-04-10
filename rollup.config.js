@@ -1,3 +1,7 @@
+import 'prismjs'
+import 'prism-svelte'
+import './prism/svx.js'
+
 import svelte from 'rollup-plugin-svelte'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
@@ -15,6 +19,8 @@ import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import sanitize from 'rehype-sanitize'
 
+import { highlight, highlighter } from './prism/prism.js'
+
 import { extname } from 'path'
 
 import { mdsvex } from 'mdsvex'
@@ -29,6 +35,7 @@ function mdsvex_transform () {
       const c = (
         await mdsvex({
           highlight: {
+            highlighter,
             alias: {
               ts: 'typescript',
               mdx: 'markdown',
@@ -90,8 +97,8 @@ export default [
       svelte({
         extensions: ['.svelte', '.svx'],
         preprocess: [
-          sveltePreprocess(),
-          mdsvex({ extension: '.svx' })
+          mdsvex({ extension: '.svx' }),
+          sveltePreprocess()
         ]
       }),
       css({ output: 'bundle.css' }),
