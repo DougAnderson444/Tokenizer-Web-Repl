@@ -9,7 +9,10 @@ importScripts(`${CDN_URL}/svelte/compiler.js`); // importScripts method of the W
 // import the mdsvex worker
 importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
 
+// importScripts(`/mdsvex.js`)
+
 const mode = 'dom'
+const warnings = []
 
 const component_lookup: Map<string, Component> = new Map();
 
