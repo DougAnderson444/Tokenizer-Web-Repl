@@ -1,10 +1,15 @@
-import type { Component } from "./types";
+import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
 
 // you could use unpkg like the official repl, i thought i'd try out jsdelivr
 const CDN_URL = "https://cdn.jsdelivr.net/npm";
 importScripts(`${CDN_URL}/svelte/compiler.js`); // importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
+
+// import the mdsvex worker
+importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
+
+const mode = 'dom'
 
 const component_lookup: Map<string, Component> = new Map();
 
@@ -18,20 +23,32 @@ function generate_lookup(components: Component[]): void {
 	});
 }
 
+function compare_to_version(major, minor, patch) {
+	const v = svelte.VERSION.match(/^(\d+)\.(\d+)\.(\d+)/);
+	return v[1] - major || v[2] - minor || v[3] - patch;
+}
+
+function has_loopGuardTimeout_feature() {
+	return compare_to_version(3, 14, 0) >= 0;
+}
+
 self.addEventListener(
 	"message",
 	async (event: MessageEvent<Component[]>): Promise<void> => {
 		generate_lookup(event.data);
 
+		const new_cache = {};
+
 		// 1. First we bundle, then we 
 		// 2. generate actual source code
 		const bundle = await rollup.rollup({
-			input: "./App.svelte",
+			input: "./App.svx",
 			plugins: [
 				{
 					name: "repl-plugin",
 					async resolveId(importee: string, importer: string) {
 						// handle imports from 'svelte'
+						console.log({importee})
 
 						// import x from 'svelte'
 						if (importee === "svelte") return `${CDN_URL}/svelte/index.mjs`;
@@ -52,6 +69,12 @@ self.addEventListener(
 						// local repl components
 						// check that this file is in that component look up
 						if (component_lookup.has(importee)) return importee;
+
+						// importing from a URL
+						if (importee.startsWith('http:') || importee.startsWith('https:')) { return importee }
+
+						// importing from a URL
+						if (importee.startsWith('C:') || importee.startsWith('file:')) { return importee }
 
 						// relative imports from a remote package
 						if (importee.startsWith("."))
@@ -87,20 +110,60 @@ self.addEventListener(
 					// transform allows us to compile our non-js code
 					// id is the filepath
 					transform(code: string, id: string) {
-						// our only transform is to compile svelte components
+						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
-						//@ts-ignore
-						if (/.*\.svelte/.test(id)) {
-							const { js, css } = svelte.compile(code)
-							return js.code;
-							// return {
-							// 	id,
-							// 	result: {
-							// 		js: js.code,
-							// 		css: css.code || `/* Add a <sty` + `le> tag to see compiled CSS */`
-							// 	}
-							// };
+						if (!/\.svelte$|\.svx$/.test(id)) return null
+
+						const name = id
+							.split('/')
+							.pop()
+							.split('.')[0]
+
+						// TODO: cache
+						let cache = false
+						let preprocessPromise
+						if (cache && cache[id] && cache[id].code === code) {
+							return cache[id].result
+						} else if (/\.svx$/.test(id)) {
+							preprocessPromise = self.mdsvex
+							.mdsvex()
+							.markup({ content: code, filename: id })
+						} else {
+							preprocessPromise = Promise.resolve({ code })
 						}
+
+						//@ts-ignore
+						return preprocessPromise.then(({ code: v }) => {
+							const result = svelte.compile(
+							v,
+							Object.assign(
+								{
+									generate: mode,
+									format: 'esm',
+									dev: true,
+									name,
+									filename: name + '.svelte'
+								},
+								has_loopGuardTimeout_feature() && {
+									loopGuardTimeout: 100
+								}
+							)
+							)
+
+							new_cache[id] = { v, result };
+
+							(result.warnings || result.stats.warnings).forEach(warning => {
+							// TODO remove stats post-launch
+							warnings.push({
+								message: warning.message,
+								filename: warning.filename,
+								start: warning.start,
+								end: warning.end
+							})
+							})
+
+							return result.js
+						})
 					},
 				},
 			],

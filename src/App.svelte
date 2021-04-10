@@ -1,18 +1,28 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+
 	import Input from "./Input.svelte";
 	import Output from "./Output.svelte";
 	import type { Component } from "./types";
 
-	let components: Component[] = [
+	export let components: Component[] = [
 		{
 			id: 0,
 			name: "App",
-			type: "svelte",
-			source: `<script>
-					import Component from './Component1.svelte';
-					<\/script>
+			type: "svx",
+			source: `
+<script>
+import Component from './Component1.svelte';
+<\/script>
 
-					<Component />`,
+<Component />
+
+# Hi 
+
+## Hello
+
+### very small
+`,
 		},
 		{
 			id: 1,
