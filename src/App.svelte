@@ -11,10 +11,20 @@
 			name: "App",
 			type: "svx",
 			source: `
+
+---
+title: Awesome Title
+author: Doug
+date: Today
+
+---
+
 <script>
 import Component from './Component1.svelte';
-<\/script>
+import Layout from './layout.svelte';
 
+<\/script>
+<Layout {title} {author} {date} >
 <Component />
 
 # Hi 
@@ -22,13 +32,48 @@ import Component from './Component1.svelte';
 ## Hello
 
 ### very small
+
+
+\`\`\`ts
+
+import statement from 'module'
+
+let variable = 0
+\`\`\`
+
+</Layout>
+
 `,
 		},
 		{
 			id: 1,
 			name: "Component1",
 			type: "svelte",
-			source: "<h1>Hello</h1>",
+			source: `
+<h1>Hello</h1>
+
+<style>h1 {color: red;}</style>
+			`,
+		},{
+			id: 2,
+			name: "layout",
+			type: "svelte",
+			source: `
+<script>
+  export let title;
+  export let author;
+  export let date;
+<\/script>
+
+<h1>{ title }</h1>
+
+<slot>
+</slot>
+
+<p class="date">on: { date }</p>
+<p class="date">by: { author }</p>
+
+`,
 		},
 	];
 
@@ -37,6 +82,9 @@ import Component from './Component1.svelte';
 	// const worker = new Worker("./worker.js");
 	let worker;
 	let workersUrl = "/worker.js";
+	
+	let injectedCSS
+
 	try {
 		worker = new Worker(workersUrl);
 		worker.onerror = function (event) {
@@ -85,10 +133,6 @@ import Component from './Component1.svelte';
 		worker.postMessage(_components);
 	}
 
-	function save(compiled) {
-		console.log(compiled);
-	}
-
 	$: compile(components);
 
 	// $: save(compiled);
@@ -96,5 +140,5 @@ import Component from './Component1.svelte';
 
 <main>
 	<Input bind:components bind:current />
-	<Output {compiled} />
+	<Output {compiled} {injectedCSS} />
 </main>
