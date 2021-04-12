@@ -81,7 +81,7 @@ let variable = 0
 
 	// const worker = new Worker("./worker.js");
 	let worker;
-	let workersUrl = "/worker.js";
+	let workersUrl = "worker.js";
 	
 	let injectedCSS
 
@@ -100,8 +100,7 @@ let variable = 0
 	function createWorkerFallback(workerUrl) {
 		let worker = null;
 		workerUrl =
-			window.location.href.substring(0, window.location.href.lastIndexOf("/")) +
-			workerUrl;
+			window.location.href.substring(0, window.location.href.lastIndexOf("/")) + '/' + workerUrl;
 		try {
 			let blob;
 			try {
