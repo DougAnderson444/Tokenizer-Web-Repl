@@ -1,6 +1,8 @@
 {
   "name": "browser-svelte-repl",
-  "version": "0.0.3",
+  "version": "0.0.4",
+  "module": "dist/es",
+  "main": "dist/umd",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -12,6 +14,7 @@
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@tsconfig/svelte": "^1.0.0",
+    "codemirror": "^5.60.0",
     "rehype-autolink-headings": "^5.0.1",
     "rehype-sanitize": "^4.0.0",
     "rehype-slug": "^4.0.1",
