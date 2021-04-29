@@ -35,11 +35,21 @@ import Layout from './layout.svelte';
 
 
 \`\`\`ts
-
+// comment
 import statement from 'module'
 
 let variable = 0
 \`\`\`
+
+<pre class='language-ts'>
+// comment
+Pre with no code
+</pre>
+
+<code class='language-ts'>
+code with no pre
+</code>
+
 
 </Layout>
 

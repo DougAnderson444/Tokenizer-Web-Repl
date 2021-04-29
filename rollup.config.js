@@ -11,6 +11,7 @@ import css from 'rollup-plugin-css-only'
 import json from 'rollup-plugin-json'
 import globals from 'rollup-plugin-node-globals'
 import builtins from 'rollup-plugin-node-builtins'
+import pkg from './package.json'
 
 import sveltePreprocess from 'svelte-preprocess'
 import typescript from '@rollup/plugin-typescript'
@@ -19,11 +20,16 @@ import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import sanitize from 'rehype-sanitize'
 
-import { highlight, highlighter } from './prism/prism.js'
+// import { highlight, highlighter } from './prism/prism.js'
 
 import { extname } from 'path'
 
 import { mdsvex } from 'mdsvex'
+
+const name = pkg.name
+  .replace(/^(@\S+\/)?(svelte-)?(\S+)/, '$3')
+  .replace(/^\w/, (m) => m.toUpperCase())
+  .replace(/-\w/g, (m) => m[1].toUpperCase())
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -35,7 +41,7 @@ function mdsvex_transform () {
       const c = (
         await mdsvex({
           highlight: {
-            highlighter,
+            // highlighter,
             alias: {
               ts: 'typescript',
               mdx: 'markdown',
@@ -115,6 +121,47 @@ export default [
       !production && serve(),
       !production && livereload('public'),
       production && terser()
+    ],
+    watch: {
+      clearScreen: false
+    },
+    onwarn
+  },
+  {
+    input: 'src/index.js',
+    output: [{
+      sourcemap: true,
+      format: 'es',
+      dir: pkg.module
+    },
+    {
+      sourcemap: true,
+      format: 'umd',
+      name,
+      file: pkg.main,
+      inlineDynamicImports: true
+    }],
+    plugins: [
+      mdsvex_transform(),
+      json(),
+      svelte({
+        extensions: ['.svelte', '.svx'],
+        preprocess: [
+          mdsvex({ extension: '.svx' }),
+          sveltePreprocess()
+        ]
+      }),
+      css({ output: 'bundle.css' }),
+
+      resolve({
+        browser: true,
+        dedupe: ['svelte']
+      }),
+      commonjs(),
+      globals(),
+      builtins(),
+      typescript(),
+      terser()
     ],
     watch: {
       clearScreen: false

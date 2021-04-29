@@ -2202,7 +2202,9 @@ const CDN_URL = "https://cdn.jsdelivr.net/npm";
 importScripts(`${CDN_URL}/svelte/compiler.js`); // importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
 // import the mdsvex worker
 importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`);
+// importScripts(`/mdsvex.js`)
 const mode = 'dom';
+const warnings = [];
 const component_lookup = new Map();
 async function fetch_package(url) {
     return (await fetch(url)).text();
@@ -2230,7 +2232,6 @@ self.addEventListener("message", async (event) => {
                 name: "repl-plugin",
                 async resolveId(importee, importer) {
                     // handle imports from 'svelte'
-                    console.log({ importee });
                     // import x from 'svelte'
                     if (importee === "svelte")
                         return `${CDN_URL}/svelte/index.mjs`;
