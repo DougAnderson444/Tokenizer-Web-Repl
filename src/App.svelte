@@ -3,6 +3,8 @@
 
 	import Input from "./Input.svelte";
 	import Output from "./Output.svelte";
+
+	import { code_1, code_2, code_3 } from "./_source";
 	import type { Component } from "./types";
 
 	export let components: Component[] = [
@@ -10,80 +12,19 @@
 			id: 0,
 			name: "App",
 			type: "svx",
-			source: `
-
----
-title: Awesome Title
-author: Doug
-date: Today
-
----
-
-<script>
-import Component from './Component1.svelte';
-import Layout from './layout.svelte';
-
-<\/script>
-<Layout {title} {author} {date} >
-<Component />
-
-# Hi 
-
-## Hello
-
-### very small
-
-
-\`\`\`ts
-// comment
-import statement from 'module'
-
-let variable = 0
-\`\`\`
-
-<pre class='language-ts'>
-// comment
-Pre with no code
-</pre>
-
-<code class='language-ts'>
-code with no pre
-</code>
-
-
-</Layout>
-
-`,
+			source: code_1,
 		},
 		{
 			id: 1,
 			name: "Component1",
 			type: "svelte",
-			source: `
-<h1>Hello</h1>
-
-<style>h1 {color: red;}</style>
-			`,
-		},{
+			source: code_2,
+		},
+		{
 			id: 2,
 			name: "layout",
 			type: "svelte",
-			source: `
-<script>
-  export let title;
-  export let author;
-  export let date;
-<\/script>
-
-<h1>{ title }</h1>
-
-<slot>
-</slot>
-
-<p class="date">on: { date }</p>
-<p class="date">by: { author }</p>
-
-`,
+			source: code_3,
 		},
 	];
 
@@ -92,8 +33,8 @@ code with no pre
 	// const worker = new Worker("./worker.js");
 	let worker;
 	let workersUrl = "worker.js";
-	
-	let injectedCSS
+
+	let injectedCSS;
 
 	try {
 		worker = new Worker(workersUrl);
@@ -110,7 +51,9 @@ code with no pre
 	function createWorkerFallback(workerUrl) {
 		let worker = null;
 		workerUrl =
-			window.location.href.substring(0, window.location.href.lastIndexOf("/")) + '/' + workerUrl;
+			window.location.href.substring(0, window.location.href.lastIndexOf("/")) +
+			"/" +
+			workerUrl;
 		try {
 			let blob;
 			try {
