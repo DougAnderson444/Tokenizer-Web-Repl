@@ -1,21 +1,21 @@
 <script lang="ts">
-	import type { Tab } from "./types";
+	import type { Tab } from "../types";
+	import { current } from "../js/store.js";
 
 	import { createEventDispatcher } from "svelte";
 
 	const dispatch = createEventDispatcher<{ select: number; new: undefined }>();
 
 	export let tabs: Tab[] = [];
-	export let current: number = 0;
 </script>
 
 <ul>
 	{#each tabs as { name, type, id }}
-		<li class:active={id === current} on:click={() => dispatch('select', id)}>
+		<li class:active={id === $current} on:click={() => dispatch("select", id)}>
 			{name}.{type}
 		</li>
 	{/each}
-	<li><button on:click={() => dispatch('new')}>+</button></li>
+	<li><button on:click={() => dispatch("new")}>+</button></li>
 </ul>
 
 <style>

@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { setContext } from "svelte";
 
-	import Input from "./Input.svelte";
-	import Output from "./Output.svelte";
+	import Input from "./components/Input.svelte";
+	import Output from "./components/Output.svelte";
 
 	import { code_1, code_2, code_3 } from "./_source";
 	import type { Component } from "./types";
+	import { components, current } from "./js/store.js";
 
-	export let components: Component[] = [
+	// intial defaults
+	components.set([
 		{
 			id: 0,
 			name: "App",
@@ -26,15 +28,15 @@
 			type: "svelte",
 			source: code_3,
 		},
-	];
-
-	let current: number = 0;
+	]);
 
 	// const worker = new Worker("./worker.js");
 	let worker;
 	let workersUrl = "worker.js";
 
+	let compiled;
 	let injectedCSS;
+	let module_editor;
 
 	try {
 		worker = new Worker(workersUrl);
@@ -45,8 +47,6 @@
 	} catch (e) {
 		worker = createWorkerFallback(workersUrl);
 	}
-
-	let compiled;
 
 	function createWorkerFallback(workerUrl) {
 		let worker = null;
@@ -85,12 +85,26 @@
 		worker.postMessage(_components);
 	}
 
-	$: compile(components);
+	// pass these functions down to child components
+	setContext("REPL", {
+		register_module_editor(editor) {
+			module_editor = editor;
+		},
+		handle_edit(event) {
+			$components[$current].source = event.detail.value;
+		},
+		handle_select(id) {
+			$current = id;
+			module_editor.update($components[$current].source);
+		},
+	});
+
+	$: compile($components);
 
 	// $: save(compiled);
 </script>
 
 <main>
-	<Input bind:components bind:current />
+	<Input />
 	<Output {compiled} {injectedCSS} />
 </main>
