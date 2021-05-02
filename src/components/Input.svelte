@@ -19,10 +19,11 @@
 			id,
 			name: `Component${id}`,
 			type: "svelte",
-			source: "",
+			source: `Component ${id}`,
 		});
 
 		$current = id;
+		handle_select(id);
 		// textarea.focus();
 	}
 	function selectComponent({ detail }) {
