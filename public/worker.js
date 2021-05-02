@@ -2199,7 +2199,7 @@ for(var t={},s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
 
 // you could use unpkg like the official repl, i thought i'd try out jsdelivr
 const CDN_URL = "https://cdn.jsdelivr.net/npm";
-importScripts(`${CDN_URL}/svelte/compiler.js`); // importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
+importScripts(`${CDN_URL}/svelte/compiler.js`); // @3.35.0 importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
 // import the mdsvex worker
 importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`);
 // importScripts(`/mdsvex.js`)
