@@ -1,5 +1,4 @@
-export const code_1 = `
----
+export const code_1 = `---
 title: Awesome Title
 author: Doug
 date: Today
@@ -15,28 +14,14 @@ import Layout from './layout.svelte';
 <Component />
 
 # Hi 
-
 ## Hello
-
 ### very small
-
 
 \`\`\`ts
 // comment
 import statement from 'module'
-
 let variable = 0
 \`\`\`
-
-<pre class='language-ts'>
-// comment
-Pre with no code
-</pre>
-
-<code class='language-ts'>
-code with no pre
-</code>
-
 
 </Layout>
 
@@ -45,13 +30,23 @@ code with no pre
 export const code_2 = `
 <h1>Hello</h1>
 
-<style>h1 {color: red;}</style>`
+<style>
+h1 {
+  color: red;
+}
+</style>`
 export const code_3 = `
 <script>
   export let title;
   export let author;
   export let date;
 <\/script>
+
+<style>
+  h1 {
+    color: blue;
+  }
+</style>
 
 <h1>{ title }</h1>
 
