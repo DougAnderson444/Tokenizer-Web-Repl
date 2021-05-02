@@ -61,6 +61,7 @@
 			lineWrapping: true,
 			indentWithTabs: true,
 			indentUnit: 2,
+			smartIndent: false,
 			tabSize: 2,
 			value: "",
 			mode: modes[mode] || {
@@ -119,10 +120,8 @@
 
 	export function update(new_code) {
 		code = new_code;
-		console.log("updating");
 		if (editor) {
 			const { left, top } = editor.getScrollInfo();
-			console.log("pos ", left, top);
 			editor.setValue(code);
 			editor.scrollTo(left, top);
 		}
