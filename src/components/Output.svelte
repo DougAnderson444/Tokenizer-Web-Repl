@@ -41,8 +41,8 @@
 						import(url).then(({ default: App }) => {
 							if (component) component.$destroy();
 
-							document.body.innerHTML = '';
-							component = new App({ target: document.body })
+							document.getElementById('app').innerHTML = '';
+							component = new App({ target: document.getElementById('app') })
 						})
 					}
 
@@ -51,7 +51,11 @@
 					}, false)
 				<\/script>
 			</head>
-			<body></body>
+			<body>
+				<div id="app"></div>
+				<script src="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js"><\/script>
+				<script src="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js"><\/script>
+			</body>
 		</html>
 	`;
 </script>
