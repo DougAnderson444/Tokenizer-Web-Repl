@@ -7,7 +7,7 @@ date: Today
 
 <script>
 import Component from './Component1.svelte';
-import Layout from './layout.svelte';
+import Layout from './Layout.svelte';
 
 <\/script>
 <Layout {title} {author} {date} >
@@ -27,16 +27,14 @@ let variable = 0
 
 `
 
-export const code_2 = `
-<h1>Hello</h1>
+export const code_2 = `<h1>Hello</h1>
 
 <style>
 h1 {
   color: red;
 }
 </style>`
-export const code_3 = `
-<script>
+export const code_3 = `<script>
   export let title;
   export let author;
   export let date;
