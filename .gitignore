@@ -3,3 +3,4 @@
 /public/worker.*
 .DS_Store
 .vscode
+dist
