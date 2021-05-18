@@ -5,7 +5,7 @@
 	import { components, current } from "../js/store.js";
 	import { getContext } from "svelte";
 
-	const { handle_select } = getContext("REPL");
+	const { handle_select, editor_focus } = getContext("REPL");
 
 	function get_max(_components: Component[]): number {
 		const ids = _components.map(({ id }) => id);
@@ -24,7 +24,7 @@
 
 		$current = id;
 		handle_select(id);
-		// textarea.focus();
+		editor_focus();
 	}
 	function selectComponent({ detail }) {
 		if ($current !== detail) {
