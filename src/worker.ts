@@ -137,19 +137,19 @@ self.addEventListener(
 						//@ts-ignore
 						return preprocessPromise.then(({ code: v }) => {
 							const result = svelte.compile(
-							v,
-							Object.assign(
-								{
-									generate: mode,
-									format: 'esm',
-									dev: true,
-									name,
-									filename: name + '.svelte'
-								},
-								has_loopGuardTimeout_feature() && {
-									loopGuardTimeout: 100
-								}
-							)
+								v,
+								Object.assign(
+									{
+										generate: mode,
+										format: 'esm',
+										dev: true,
+										name,
+										filename: name + '.svelte'
+									},
+									has_loopGuardTimeout_feature() && {
+										loopGuardTimeout: 100
+									}
+								)
 							)
 
 							new_cache[id] = { v, result };
@@ -176,6 +176,6 @@ self.addEventListener(
 		const output: string = (await bundle.generate({ format: "esm" })).output[0]
 			.code;
 
-		self.postMessage(output);
+		self.postMessage({ output, warnings });
 	}
 );

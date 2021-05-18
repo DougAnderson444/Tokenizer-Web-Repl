@@ -24,7 +24,7 @@
 		},
 		{
 			id: 2,
-			name: "layout",
+			name: "Layout",
 			type: "svelte",
 			source: code_3,
 		},
@@ -78,7 +78,7 @@
 	}
 
 	worker.addEventListener("message", (event) => {
-		compiled = event.data;
+		compiled = event.data.output;
 	});
 
 	function compile(_components: Component[]): void {
