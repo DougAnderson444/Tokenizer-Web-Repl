@@ -97,6 +97,9 @@
 			$current = id;
 			module_editor.update($components[$current].source);
 		},
+		editor_focus() {
+			module_editor.focus();
+		},
 	});
 
 	$: compile($components);
