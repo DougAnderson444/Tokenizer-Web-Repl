@@ -1,6 +1,6 @@
 {
   "name": "browser-svelte-repl",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "module": "dist/es",
   "main": "dist/umd",
   "scripts": {
@@ -36,6 +36,7 @@
     "mdsvex": "^0.9.0",
     "prism-svelte": "^0.4.7",
     "prismjs": "^1.23.0",
-    "sirv-cli": "^1.0.0"
+    "sirv-cli": "^1.0.0",
+    "terser": "^5.7.0"
   }
 }
