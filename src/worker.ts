@@ -2,6 +2,8 @@ import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
 
+import { minify } from "terser";
+
 // you could use unpkg like the official repl, i thought i'd try out jsdelivr
 const CDN_URL = "https://cdn.jsdelivr.net/npm";
 importScripts(`${CDN_URL}/svelte/compiler.js`); // @3.35.0 importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
@@ -173,8 +175,10 @@ self.addEventListener(
 
 		// a touch longwinded but output contains an array of chunks
 		// we are not code-splitting, so we only have a single chunk
-		const output: string = (await bundle.generate({ format: "esm" })).output[0]
+		let output: string = (await bundle.generate({ format: "esm" })).output[0]
 			.code;
+
+		output = (await minify(output)).code; //, { sourceMap: true }
 
 		self.postMessage({ output, warnings });
 	}
