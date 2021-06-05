@@ -2,6 +2,9 @@ import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
 
+// import * as asc from "assemblyscript/cli/asc"
+// const { binary, text, stdout, stderr } = asc.compileString(`...`, { optimize: 2 });
+
 import { minify } from "terser";
 
 // you could use unpkg like the official repl, i thought i'd try out jsdelivr
