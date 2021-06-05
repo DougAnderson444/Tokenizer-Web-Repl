@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setContext } from "svelte";
+	import { onMount, setContext } from "svelte";
 
 	import Input from "./components/Input.svelte";
 	import Output from "./components/Output.svelte";
@@ -8,8 +8,11 @@
 	import type { Component } from "./types";
 	import { components, current } from "./js/store.js";
 
-	// intial defaults
-	components.set([
+	import { ImmortalDB } from "immortal-db";
+
+	const COMPONENTS_KEY = "components";
+
+	const defaultComps = [
 		{
 			id: 0,
 			name: "App",
@@ -28,13 +31,34 @@
 			type: "svelte",
 			source: code_3,
 		},
-	]);
+	];
+
+	let mounted = false;
+
+	onMount(async () => {
+		// check for last used components
+		const def: null = null;
+		const storedValue = await ImmortalDB.get(COMPONENTS_KEY, def);
+
+		let parsedStore;
+		if (storedValue) parsedStore = JSON.parse(storedValue);
+
+		if (parsedStore && parsedStore.length > 0) {
+			// load saved components
+			components.set(parsedStore);
+		} else {
+			// intial defaults
+			components.set(defaultComps);
+		}
+		mounted = true;
+	});
 
 	// const worker = new Worker("./worker.js");
 	let worker;
 	let workersUrl = "worker.js";
 
 	let compiled;
+	let srcdoc;
 	let injectedCSS;
 	let module_editor;
 
@@ -81,8 +105,11 @@
 		compiled = event.data.output;
 	});
 
-	function compile(_components: Component[]): void {
+	async function compile(_components: Component[]): Promise<void> {
+		// post data msg to compiler
 		worker.postMessage(_components);
+		// also update store
+		await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
 	}
 
 	// pass these functions down to child components
@@ -102,12 +129,16 @@
 		},
 	});
 
-	$: compile($components);
+	// compile whenever non-null components change ($:)
+	$: if ($components) compile($components);
 
 	// $: save(compiled);
 </script>
 
 <main>
-	<Input />
-	<Output {compiled} {injectedCSS} />
+	{#if mounted && $components}
+		<Input />
+		<Output {compiled} {injectedCSS} bind:srcdoc />
+	{/if}
 </main>
+<p />
