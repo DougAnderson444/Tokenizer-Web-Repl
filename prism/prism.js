@@ -34,7 +34,7 @@ export function highlight(code, lang) {
 	return highlighted;
 }
 
-var visit = require("unist-util-visit");
+import visit from "unist-util-visit";
 
 export function highlighter(options) {
 	return function(ast) {
