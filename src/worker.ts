@@ -18,6 +18,7 @@ importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
 
 const mode = 'dom'
 const warnings = []
+const cache = new Map();
 
 const component_lookup: Map<string, Component> = new Map();
 
@@ -40,12 +41,19 @@ function has_loopGuardTimeout_feature() {
 	return compare_to_version(3, 14, 0) >= 0;
 }
 
+async function assertModule(url: string): bool {
+	// first, get the url using fetch
+	// then, scan the text for the words module.export
+	// if it has module.export, then it's cjs not es module
+	const mod = await fetch_package(url) 
+	const cjs = mod.includes("module.export") || mod.includes("require(")
+	return !cjs
+}
+
 self.addEventListener(
 	"message",
 	async (event: MessageEvent<Component[]>): Promise<void> => {
 		generate_lookup(event.data);
-
-		const new_cache = {};
 
 		// 1. First we bundle, then we 
 		// 2. generate actual source code
@@ -91,18 +99,48 @@ self.addEventListener(
 
 						// get the package.json and load it into memory
 						const pkg_url = `${CDN_URL}/${importee}/package.json`;
-						const pkg = JSON.parse(await fetch_package(pkg_url));
+						let pkg
+						let err
+						
+						const fetched = await fetch_package(pkg_url)
 
+						if (fetched.includes("Couldn't find the requested file")) return null
+
+						try {
+							pkg = JSON.parse(fetched);
+						} catch (error) {
+							err = true
+							pkg = null
+						}
+						
+						// use the aobove url minus `/package.json` to resolve the URL
+						const url = pkg_url.replace(/\/package\.json$/, "");
+						
 						// get an entry point from the pkg.json - first try svelte, then modules, then main
-						if (pkg.svelte || pkg.module || pkg.main) {
-							// use the aobove url minus `/package.json` to resolve the URL
-							const url = pkg_url.replace(/\/package\.json$/, "");
-							return new URL(pkg.svelte || pkg.module || pkg.main, `${url}/`)
+						if (pkg && (pkg.svelte || pkg.browser || pkg.module || pkg.main)) {
+
+							let browerString
+							if(pkg.browser) {
+								browerString = pkg.browser
+								// browser entry might be an object
+								if ( typeof pkg.browser === "object" ) browerString = Object.values(pkg.browser)[0]
+							}
+
+							const href = new URL(pkg.svelte || browerString || pkg.module || pkg.main, `${url}/`)
 								.href;
+							
+							if(browerString) console.log({ href })
+							
+							return href
+						}else{
+							const retUrl = assertModule(`${url}/index.js`) ? `${url}/index.mjs` : `${url}/index.js`
+							if(err) console.log(new URL(retUrl).href)
+							return new URL(retUrl).href;
 						}
 
 						// we probably missed stuff, pass it along as is
 						return importee;
+
 					},
 					// id is the filepath
 					async load(id: string) {
@@ -117,6 +155,7 @@ self.addEventListener(
 					// transform allows us to compile our non-js code
 					// id is the filepath
 					transform(code: string, id: string) {
+
 						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
 						if (!/\.svelte$|\.svx$/.test(id)) return null
@@ -126,11 +165,11 @@ self.addEventListener(
 							.pop()
 							.split('.')[0]
 
-						// TODO: cache
-						let cache = false
 						let preprocessPromise
-						if (cache && cache[id] && cache[id].code === code) {
-							return cache[id].result
+
+						if (cache && cache.has(id) && cache.get(id).code === code) {
+							// console.log(`return cache of ${id}`, cache.get(id))
+							return cache.get(id).result.js
 						} else if (/\.svx$/.test(id)) {
 							preprocessPromise = self.mdsvex
 							.mdsvex()
@@ -157,16 +196,17 @@ self.addEventListener(
 								)
 							)
 
-							new_cache[id] = { v, result };
+							cache.set(id, { code: v, result });
+							// console.log(`after set: ${id}`, cache.get(id));
 
 							(result.warnings || result.stats.warnings).forEach(warning => {
-							// TODO remove stats post-launch
-							warnings.push({
-								message: warning.message,
-								filename: warning.filename,
-								start: warning.start,
-								end: warning.end
-							})
+								// TODO remove stats post-launch
+								warnings.push({
+									message: warning.message,
+									filename: warning.filename,
+									start: warning.start,
+									end: warning.end
+								})
 							})
 
 							return result.js
