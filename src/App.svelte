@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, setContext } from "svelte";
-
 	import Input from "./components/Input.svelte";
 	import Output from "./components/Output.svelte";
 
@@ -21,15 +20,15 @@
 		},
 		{
 			id: 1,
-			name: "Component1",
-			type: "svelte",
-			source: code_2,
-		},
-		{
-			id: 2,
 			name: "Layout",
 			type: "svelte",
 			source: code_3,
+		},
+		{
+			id: 2,
+			name: "Component1",
+			type: "svelte",
+			source: code_2,
 		},
 	];
 
