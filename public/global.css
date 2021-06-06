@@ -323,8 +323,10 @@ form {
 
 ul {
 	list-style: none;
-	display: flex;
 	font-size: 1.3rem;
+	margin: 1rem;
+	display: inline-grid;
+    max-height: 20%;
 }
 
 li {

@@ -40,7 +40,7 @@
 	$: tabs = $components.map(({ id, name, type }) => ({ id, name, type }));
 </script>
 
+<Tabs {tabs} on:select={selectComponent} on:new={new_component} />
 <section>
-	<Tabs {tabs} on:select={selectComponent} on:new={new_component} />
 	<ModuleEditor />
 </section>
