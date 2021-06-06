@@ -1,6 +1,6 @@
 {
   "name": "browser-svelte-repl",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "module": "dist/es",
   "main": "dist/umd",
   "scripts": {
@@ -33,6 +33,7 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "immortal-db": "^1.1.0",
     "mdsvex": "^0.9.0",
     "prism-svelte": "^0.4.7",
