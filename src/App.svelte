@@ -104,11 +104,25 @@
 		compiled = event.data.output;
 	});
 
+	const delay = (function () {
+		var timer = 0;
+		return function (callback, ms) {
+			clearTimeout(timer);
+			timer = setTimeout(callback, ms);
+		};
+	})();
+
+	let timer;
+
 	async function compile(_components: Component[]): Promise<void> {
 		// post data msg to compiler
-		worker.postMessage(_components);
-		// also update store
-		await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
+		if (timer) clearTimeout(timer); // cancel any exisitng waiting
+		timer = setTimeout(async () => {
+			worker.postMessage(_components);
+			// also update store
+			await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
+			timer = false;
+		}, 250);
 	}
 
 	// pass these functions down to child components
