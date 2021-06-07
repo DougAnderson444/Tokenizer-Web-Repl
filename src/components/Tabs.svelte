@@ -68,7 +68,7 @@
 	}
 </script>
 
-<ul>
+<ul class="side-buttons">
 	{#each tabs as { name, type, id }}
 		<li
 			class:active={id === $current}
@@ -80,7 +80,7 @@
 				<div class="uneditable">App.{type}</div>
 			{:else if id === editing?.id}
 				<span class="input-sizer">
-					{editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)}
+					<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
 				</span>
 
 				<!-- svelte-ignore a11y-autofocus -->
@@ -121,27 +121,21 @@
 <style>
 	.active {
 		font-weight: 900;
-		text-decoration: underline;
+		/* text-decoration: underline; */
 	}
-	.file-tabs .button,
-	.file-tabs button {
-		position: relative;
-		display: inline-block;
-		font: 400 12px/1.5 var(--font);
-		font-size: 1.5rem;
-		border: none;
-		padding: 12px 34px 8px 8px;
-		margin: 0;
-		border-radius: 0;
+	.side-buttons .button,
+	.side-buttons button {
+		font-size: 1.25rem;
+		text-align: left;
 	}
 
-	.file-tabs .button:first-child {
+	.side-buttons .button {
 		padding-left: 12px;
 	}
 
-	.file-tabs .button.active {
-		font-size: 1.6rem;
-		font-weight: bold;
+	.side-buttons .button.active {
+		font-weight: bolder;
+		background-color: rgba(209, 250, 229);
 	}
 	.editable,
 	.uneditable,
@@ -155,8 +149,9 @@
 	.input-sizer {
 		color: #ccc;
 	}
-	.file-tabs .button.active .editable {
+	.side-buttons .button.active .editable {
 		cursor: text;
+		font-weight: bold;
 	}
 	.file-tabs .button.active .remove {
 		display: block;
