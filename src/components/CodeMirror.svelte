@@ -164,7 +164,8 @@
 
 	.codemirror-container :global(.CodeMirror) {
 		height: 100%;
-		background: transparent;
+		/* background: transparent; */
+		background-color: #f3f3f3;
 		font: 400 14px/1.7 var(--font-mono);
 		padding: 24px;
 	}

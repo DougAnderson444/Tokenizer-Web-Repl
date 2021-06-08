@@ -60,7 +60,9 @@
 		}
 
 		newmatter += `
----`;
+---
+
+`;
 
 		$components[0].source = newmatter + content;
 		$components = $components; // refresh the codemirror

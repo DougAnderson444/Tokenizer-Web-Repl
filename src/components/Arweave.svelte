@@ -139,6 +139,11 @@
 {/if}
 
 <style>
+	span {
+		position: relative;
+		top: -20px;
+		padding-left: 9px;
+	}
 	.connected {
 		color: green;
 	}
