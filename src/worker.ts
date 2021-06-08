@@ -1,6 +1,7 @@
 import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
+import json from 'rollup-plugin-json'
 
 // import * as asc from "assemblyscript/cli/asc"
 // const { binary, text, stdout, stderr } = asc.compileString(`...`, { optimize: 2 });
@@ -18,7 +19,7 @@ importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
 
 const mode = 'dom'
 const warnings = []
-const cache = new Map();
+const cache: Map<string, any>  = new Map();
 
 const component_lookup: Map<string, Component> = new Map();
 
@@ -95,6 +96,11 @@ self.addEventListener(
 						if (importee.startsWith("."))
 							return new URL(importee, importer).href;
 
+						// skypack relative imports from a remote package
+						if (importee.startsWith("/")) {
+							const url = new URL(importee, importer).href;
+							return url
+						}
 						// bare named module imports (importing an npm package)
 
 						// get the package.json and load it into memory
@@ -103,6 +109,8 @@ self.addEventListener(
 						let err
 						
 						const fetched = await fetch_package(pkg_url)
+
+						console.log({fetched})
 
 						if (fetched.includes("Couldn't find the requested file")) return null
 
@@ -213,6 +221,7 @@ self.addEventListener(
 						})
 					},
 				},
+				json()
 			],
 		});
 
