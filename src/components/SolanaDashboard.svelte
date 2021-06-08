@@ -61,7 +61,6 @@
 
 		newmatter += `
 ---
-
 `;
 
 		$components[0].source = newmatter + content;
