@@ -160,6 +160,7 @@
 	<script>
 		global = globalThis; // for solana web3 repo
 	</script>
+	<title>Tokenizer Web</title>
 	<link
 		rel="stylesheet"
 		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
