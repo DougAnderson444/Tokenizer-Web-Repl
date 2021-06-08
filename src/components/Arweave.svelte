@@ -60,7 +60,7 @@
 			logging: false,
 		});
 		// init TestWeave on the top of arweave
-		// console.log({ TestWeave });
+		console.log({ TestWeave });
 		testWeave = await TestWeave.default.init(arweave);
 
 		let endpointResponse = await fetch(coinEndpoint);
@@ -71,7 +71,7 @@
 	const handleCreateTx = async () => {
 		let inlinedSource = await inlineSource(serializedSource);
 
-		// console.log({ inlinedSource });
+		console.log({ inlinedSource });
 
 		dataTransaction = await arweave.createTransaction(
 			{
@@ -83,7 +83,15 @@
 		dataTransaction.addTag("Content-Type", "text/html");
 
 		await arweave.transactions.sign(dataTransaction, testWeave.rootJWK);
-		await arweave.transactions.post(dataTransaction);
+
+		let status = await arweave.transactions.getStatus(dataTransaction.id);
+
+		console.log({ status });
+
+		status = await arweave.transactions.post(dataTransaction);
+
+		console.log({ status });
+
 		cost = dataTransaction.reward;
 		cost_in_ar = arweave.ar.winstonToAr(cost);
 		dataSize = dataTransaction.data_size;
