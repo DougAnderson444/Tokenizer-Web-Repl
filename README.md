@@ -2,11 +2,14 @@
 
 This REPL can run locally from the filesystem, or be saved to a static site like IPFS, permaweb like Arweave, and is tokenized to Solana.
 
+Essentially, in a picture, the REPL enables this:
+
+<img src='https://raw.githubusercontent.com/DougAnderson444/Tokenizer-Web-Repl/master/Tokenizer-process.png'>
+
 Components are saved to an array of components.
 
 Compiled via Rollup is saved to worker.js.
 
-For wasm plugin I'll need a new plugin.
 
 ## Based on REPLicant from  Svelte Summit 2020
 
