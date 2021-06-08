@@ -66,6 +66,28 @@
 			event.target.select();
 		});
 	}
+
+	function remove(component) {
+		let result = confirm(
+			`Are you sure you want to delete ${component.name}.${component.type}?`
+		);
+
+		if (result) {
+			const index = $components.indexOf(component);
+
+			if (index) {
+				components.set(
+					$components.slice(0, index).concat($components.slice(index + 1))
+				);
+			} else {
+				console.error(`Could not find component! That's... odd`);
+			}
+			dispatch(
+				"select",
+				$components[$current].id || $components[$components.length - 1].id
+			);
+		}
+	}
 </script>
 
 <ul class="side-buttons">
@@ -105,8 +127,7 @@
 					{name}.{type}
 				</div>
 
-				<!-- on:click={() => remove(component)} -->
-				<span class="remove">
+				<span class="remove" on:click={() => remove($components[id])}>
 					<svg width="12" height="12" viewBox="0 0 24 24">
 						<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
 						<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
@@ -167,5 +188,8 @@
 	.button.funky:last-child {
 		border-left: 1px solid #ddd;
 		border-right: 1px solid #ddd;
+	}
+	ul {
+		padding-left: 0rem;
 	}
 </style>

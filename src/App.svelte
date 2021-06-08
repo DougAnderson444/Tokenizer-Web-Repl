@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount, setContext } from "svelte";
+	import Header from "./components/Header.svelte";
 	import Input from "./components/Input.svelte";
 	import Output from "./components/Output.svelte";
 
-	import { code_1, code_2, code_3 } from "./_source";
+	import { code_1, code_2, code_3, code_4 } from "./_source";
 	import type { Component } from "./types";
 	import { components, current } from "./js/store.js";
 
@@ -26,15 +27,26 @@
 		},
 		{
 			id: 2,
-			name: "Component1",
+			name: "Solana",
 			type: "svelte",
 			source: code_2,
+		},
+		{
+			id: 3,
+			name: "Asset",
+			type: "svelte",
+			source: code_4,
 		},
 	];
 
 	let mounted = false;
 
 	onMount(async () => {
+		// setup some globals
+		import("buffer").then((Buffer) => {
+			global.Buffer = Buffer.Buffer;
+		});
+
 		// check for last used components
 		const def: null = null;
 		const storedValue = await ImmortalDB.get(COMPONENTS_KEY, def);
@@ -100,29 +112,25 @@
 		return worker;
 	}
 
+	let timer = 1;
+
 	worker.addEventListener("message", (event) => {
-		compiled = event.data.output;
+		if (!timer) compiled = event.data.output;
 	});
-
-	const delay = (function () {
-		var timer = 0;
-		return function (callback, ms) {
-			clearTimeout(timer);
-			timer = setTimeout(callback, ms);
-		};
-	})();
-
-	let timer;
 
 	async function compile(_components: Component[]): Promise<void> {
 		// post data msg to compiler
-		if (timer) clearTimeout(timer); // cancel any exisitng waiting
+		if (timer) {
+			clearTimeout(timer); // cancel any exisitng waiting
+			console.log("clear timer");
+		}
 		timer = setTimeout(async () => {
+			console.log("compiling");
+			timer = 0;
 			worker.postMessage(_components);
 			// also update store
 			await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
-			timer = false;
-		}, 250);
+		}, 400);
 	}
 
 	// pass these functions down to child components
@@ -148,10 +156,57 @@
 	// $: save(compiled);
 </script>
 
-<main>
+<svelte:head>
+	<script>
+		global = globalThis; // for solana web3 repo
+	</script>
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+	/>
+</svelte:head>
+
+<div class="wrapper" />
+<main class="main">
 	{#if mounted && $components}
 		<Input />
 		<Output {compiled} {injectedCSS} bind:srcdoc />
 	{/if}
 </main>
-<p />
+<footer class="footer">Footer</footer>
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-flow: row wrap;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.wrapper > * {
+		padding: 10px;
+		flex: 1 100%;
+	}
+
+	.header {
+		margin: 0 auto;
+	}
+
+	.footer {
+		background: lightgreen;
+	}
+
+	@media all and (min-width: 800px) {
+		.main {
+			flex: 3 0px;
+		}
+
+		.main {
+			order: 2;
+		}
+
+		.footer {
+			order: 4;
+		}
+	}
+</style>

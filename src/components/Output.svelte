@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Header from "./Header.svelte";
+
 	// import okaidia from "../../prism/okaidia.js"; // prism CSS for code
 	export let srcdoc: string;
 	export let compiled: string;
@@ -9,15 +11,32 @@
 
 	//injectedCSS = okaidia; // prism CSS for code
 
+	const UPDATED = "updated";
+
 	let iframe: HTMLIFrameElement;
+	let serializedSource: string;
 
 	function update(code: string) {
-		iframe.contentWindow.postMessage(code, "*"); // origin wildcard
+		iframe.contentWindow.postMessage(code, location.origin); // "*" origin wildcard
 	}
 
-	$: iframe && compiled && update(compiled);
+	window.addEventListener(
+		"message",
+		(event) => {
+			if (event.data == UPDATED) {
+				console.log("iframe updated", event.data);
+				serializedSource = new XMLSerializer().serializeToString(
+					iframe.contentWindow.document
+				);
+				// console.log({ serializedSource });
+			}
+		},
+		false
+	);
 
-	srcdoc = `
+	$: iframe && compiled && update(compiled);
+	// ${compiled ? compiled : ""}
+	$: srcdoc = `
 		<!doctype html>
 		<html>
 			<head>
@@ -29,28 +48,78 @@
 				<script type="module">
 
 					let component;
+
+					if(typeof src64 != 'undefined'){
+						console.log('pre-existing src64, convert and load')
+						fetch(src64).then(async function(response){
+							const blob = await response.blob()
+							const url = URL.createObjectURL(blob);
+							console.log({url})
+							import(url).then(function ({ default: App }) {
+								if (component) component.$destroy();
+								document.getElementById('app').innerHTML = '';
+								component = new App({ target: document.getElementById('app') })
+							})
+						})
+					} else {
+						console.log('no pre-existing src64')
+					}
 					
+					async function fetchedBlobToDataURL (blobUrl) {
+
+						return new Promise(async function (resolve, reject) {
+
+							const response = await fetch(blobUrl);
+							const blob = await response.blob()
+
+							var blobAsDataUrl
+							var reader = new FileReader();
+
+							reader.addEventListener("load", function () {
+								blobAsDataUrl = this.result;
+								resolve(blobAsDataUrl)
+							}, false);
+
+							reader.readAsDataURL(blob)
+						})
+					}
+
 					// <!-- Turn the string into actual javascript code -->
 					// <!--   import (url) <- ObjectURL <- Blob         -->
 
-					function update(source) {
+					async function update(source) {
 						// <!-- type: 'text/javascript would normally come from response headers -->
 						const blob = new Blob([source], { type: 'text/javascript' });
 						const url = URL.createObjectURL(blob);
+						const src64 = await fetchedBlobToDataURL(url)
 
-						import(url).then(({ default: App }) => {
+						// var se = document.createElement('link');
+						// se.setAttribute('rel', 'modulepreload');
+						// se.setAttribute('src', src64);
+						// document.getElementsByTagName('head').item(0).prepend(se);
+
+						var node = document.createElement('script');
+						// node.setAttribute('type', 'module'); // export const src64
+						var textnode = document.createTextNode("var src64 = '" + src64 + "'");
+						node.appendChild(textnode);
+						document.getElementsByTagName('head').item(0).prepend(node);
+
+						import(url).then(function ({ default: App }) {
 							if (component) component.$destroy();
 
 							document.getElementById('app').innerHTML = '';
 							component = new App({ target: document.getElementById('app') })
 
 							// URL.revokeObjectURL(url) // memory management 
+
+							window.parent.postMessage("${UPDATED}", window.parent)
 						})
 					}
 
-					window.addEventListener('message', event => {
+					window.addEventListener('message', function (event) {
 						update(event.data)
 					}, false)
+
 				<\/script>
 			</head>
 			<body>
@@ -61,5 +130,6 @@
 </script>
 
 <section>
+	<Header bind:serializedSource />
 	<iframe title="Rendered REPL" bind:this={iframe} {srcdoc} />
 </section>
