@@ -1,6 +1,6 @@
 # Components 
 
-This REPL can run locally from the filesystem, or be saved to a static site like IPFS.
+This REPL can run locally from the filesystem, or be saved to a static site like IPFS, permaweb like Arweave, and is tokenized to Solana.
 
 Components are saved to an array of components.
 
