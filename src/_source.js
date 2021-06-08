@@ -7,10 +7,11 @@ export const getAppSvxCode = ({token}) =>{
 
 
 export const code_1 = `---
-title: Tokenization REPL
+title: Doug's Tokenization REPL
 author: Doug
 date: 6 June 2021
-tokenKey: 5ipVLB12JskMNdVc7nUTzgBc2KSa6hRUnoWAVoUkWsKq
+endpoint: devnet
+tokenKey: BFVp8duWGJTyEDzaDX9sVzJCDnikXp3LLpyuJ29pZLhv
 
 ---
 
@@ -19,28 +20,39 @@ import Solana from './Solana.svelte';
 import Layout from './Layout.svelte';
 import Asset from './Asset.svelte';
 
+let account = "2kNoPZhth7i9nRBQikdHUUYP9vx9FqPQP66zaQFDEtoU"; // example
+
 </script>
+
 <Layout {title} {author} {date} >
+	<Solana {account} {tokenKey} {endpoint} >
+		<Asset />
+	</Solana>
 
-<Solana {tokenKey}>
+	### Make your own NFT or zkap gateway:
 
-	<Asset />
+	**This REPL:** 
 
-</Solana>
+	1. Wraps your asset in an Arweave display app which checks for the presence of the token in the requesting account. No free rides!
+	
+	2. The display app is saved in Arweave, thus the asset lives forever! The token is Solana SPL, so access lives forever!
 
-### Make your own NFT gateway!
+	2. Just hold the token type in order to access the asset!
+	
+	3. Don't hold the token? You don't have access or ownership!
 
-**This REPL:** 
+	**TODO:**
 
-1. Wraps your app in code that checks for the presence of the token in the requesting account.
-
-2. Just hold the token type in order to access the asset!
-
-TODO:
-
-1. Comp to check the signed parm against
+	1. Connect wallets
+	2. Include a signed d-rand in the location.search params, check signature against the token account
+	3. "Click-to-mint" the access token on the fly (currently hard coded)
+	4. Encrypt the asset instead of just burying it in embeded javascript
+	5. Click-to-acquire token (Serum integration)
+	6. Add nicknames to tokens
+	7. Publish to mainnets (Solana and Arweave)
 
 </Layout>
+
 
 `
 
@@ -48,8 +60,8 @@ export const code_2 = `<script>
   import { onMount } from "svelte"
 
   export let endpoint = "devnet"
-  export let account = "2kNoPZhth7i9nRBQikdHUUYP9vx9FqPQP66zaQFDEtoU" // example
-  export let tokenKey = "5ipVLB12JskMNdVc7nUTzgBc2KSa6hRUnoWAVoUkWsKq" // example
+  export let account
+  export let tokenKey
 
 	let hasAccess = false
   let ready
@@ -98,6 +110,9 @@ export const code_2 = `<script>
   // $: if (ready) console.log({ solanaWeb3 }); // because we imported it in svelte:head
 
   const checkHasAccess = async () => {
+		let params = new URLSearchParams(document.location.search);
+		account = document.location.origin === "null" ? account : params.get("account"); 
+	 	console.log("checking acccount", {account}, document.location)
     try {
       let tokenAccounts = await connection.getParsedTokenAccountsByOwner(
         new solanaWeb3.PublicKey(account),
@@ -128,22 +143,17 @@ export const code_2 = `<script>
   </script>
 </svelte:head>
 
-<h1>Solana Component</h1>
-
-<input
-  name="user-name"
-  type="email"
-  placeholder="Set Access Token Required"
-  required
-/>
 
 {#if connection}
-  Network connected to {endpoint}
+<h1>Connected to Solana {endpoint}</h1>
 {/if}
+Requires this token to have access: <br />
+{tokenKey}
+<br />
 {#if hasAccess}
   <slot />
 {:else}
-  Sorry, acquire this token to have access: <br />{tokenKey}
+  Sorry, you don't hold the access token in your Solana account. 
 {/if}
 
 <style>
@@ -157,7 +167,7 @@ export const code_3 = `<script>
   export let author;
   export let date;
 </script>
-
+ 
 <style>
   h1 {
     color: #102081;
@@ -171,6 +181,7 @@ export const code_3 = `<script>
 
 <section>
 
+
   <h1>{ title }</h1>
 
   <slot />
@@ -179,6 +190,7 @@ export const code_3 = `<script>
   <p class="date">by: { author }</p>
 
 </section>
+
 `
 
 export const code_4 = `
