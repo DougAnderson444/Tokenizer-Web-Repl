@@ -3,12 +3,25 @@
 	import Header from "./components/Header.svelte";
 	import Input from "./components/Input.svelte";
 	import Output from "./components/Output.svelte";
+	import ModuleEditor from "./components/ModuleEditor.svelte";
+
+	import SplitPane from "./components/SplitPane.svelte";
 
 	import { code_1, code_2, code_3, code_4 } from "./_source";
 	import type { Component } from "./types";
 	import { components, current } from "./js/store.js";
 
 	import { ImmortalDB } from "immortal-db";
+
+	export let orientation = "columns";
+	export let fixed = false;
+	export let fixedPos = 50;
+
+	let type, pos;
+	let serializedSource;
+
+	$: type = orientation === "rows" ? "vertical" : "horizontal";
+	$: pos = fixed ? fixedPos : orientation === "rows" ? 50 : 60;
 
 	const COMPONENTS_KEY = "components";
 
@@ -40,6 +53,7 @@
 	];
 
 	let mounted = false;
+	components.set(defaultComps);
 
 	onMount(async () => {
 		// setup some globals
@@ -122,10 +136,9 @@
 		// post data msg to compiler
 		if (timer) {
 			clearTimeout(timer); // cancel any exisitng waiting
-			console.log("clear timer");
 		}
 		timer = setTimeout(async () => {
-			console.log("compiling");
+			// console.log("compiling");
 			timer = 0;
 			worker.postMessage(_components);
 			// also update store
@@ -167,34 +180,64 @@
 	/>
 </svelte:head>
 
-<div class="wrapper" />
-<main class="main">
-	{#if mounted && $components}
+<div class="contain" class:orientation>
+	<div class="top-half">
+		<Header bind:serializedSource />
 		<Input />
-		<Output {compiled} {injectedCSS} bind:srcdoc />
-	{/if}
-</main>
-<footer class="footer">Footer</footer>
+	</div>
+	<div class="bottom-half">
+		<SplitPane {type} {pos} {fixed}>
+			<section slot="a">
+				<ModuleEditor />
+			</section>
 
+			<section slot="b" style="height: 100%;">
+				<Output {compiled} {injectedCSS} bind:srcdoc bind:serializedSource />
+			</section>
+		</SplitPane>
+	</div>
+	<!-- <main class="main">
+		{#if mounted && $components}
+			<Input />
+			<Output {compiled} {injectedCSS} bind:srcdoc />
+		{/if}
+	</main> -->
+</div>
+
+<!-- <footer class="footer">Copyright @DougAnderson444 Douglas Anderson</footer> -->
 <style>
-	.wrapper {
+	.bottom-half {
+		flex: 1;
+	}
+
+	.contain {
+		position: relative;
+		width: 100%;
 		display: flex;
-		flex-flow: row wrap;
-		font-weight: bold;
-		text-align: center;
+		flex-direction: column;
+		/* height: 96vh; */
+		height: 98%;
 	}
 
-	.wrapper > * {
-		padding: 10px;
-		flex: 1 100%;
+	.contain :global(section) {
+		position: relative;
+		/* padding: 42px 0 0 0; */
+		height: 100%;
+		box-sizing: border-box;
 	}
 
-	.header {
-		margin: 0 auto;
+	.contain :global(section) > :global(*):first-child {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 42px;
+		box-sizing: border-box;
 	}
 
-	.footer {
-		background: lightgreen;
+	.contain :global(section) > :global(*):last-child {
+		width: 100%;
+		height: 100%;
 	}
 
 	@media all and (min-width: 800px) {

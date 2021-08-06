@@ -46,7 +46,7 @@
 			// console.log({ Arweave });
 			init();
 		} else {
-			console.log("no Arweave yet, try again real soon");
+			// console.log("no Arweave yet, try again real soon");
 			setTimeout(fireWhenReady, 500);
 		}
 	};
@@ -60,8 +60,9 @@
 			logging: false,
 		});
 		// init TestWeave on the top of arweave
-		console.log({ TestWeave });
+		// console.log({ TestWeave });
 		testWeave = await TestWeave.default.init(arweave);
+		console.log({ testWeave });
 
 		let endpointResponse = await fetch(coinEndpoint);
 		let responseJson = await endpointResponse.json();
@@ -70,8 +71,6 @@
 
 	const handleCreateTx = async () => {
 		let inlinedSource = await inlineSource(serializedSource);
-
-		console.log({ inlinedSource });
 
 		dataTransaction = await arweave.createTransaction(
 			{

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Header from "./Header.svelte";
-
 	// import okaidia from "../../prism/okaidia.js"; // prism CSS for code
 	export let srcdoc: string;
 	export let compiled: string;
@@ -14,7 +12,7 @@
 	const UPDATED = "updated";
 
 	let iframe: HTMLIFrameElement;
-	let serializedSource: string;
+	export let serializedSource: string;
 
 	function update(code: string) {
 		iframe.contentWindow.postMessage(code, location.origin); // "*" origin wildcard
@@ -24,7 +22,7 @@
 		"message",
 		(event) => {
 			if (event.data == UPDATED) {
-				console.log("iframe updated", event.data);
+				// console.log("iframe updated", event.data);
 				serializedSource = new XMLSerializer().serializeToString(
 					iframe.contentWindow.document
 				);
@@ -62,7 +60,7 @@
 							})
 						})
 					} else {
-						console.log('no pre-existing src64')
+						// console.log('no pre-existing src64')
 					}
 					
 					async function fetchedBlobToDataURL (blobUrl) {
@@ -129,7 +127,5 @@
 	`;
 </script>
 
-<section>
-	<Header bind:serializedSource />
-	<iframe title="Rendered REPL" bind:this={iframe} {srcdoc} />
-</section>
+Preview:<br />
+<iframe title="Rendered REPL" bind:this={iframe} {srcdoc} />

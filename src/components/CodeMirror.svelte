@@ -5,7 +5,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let flex = false;
-	export let lineNumbers = false;
+	export let lineNumbers = true;
 	export let readonly = false;
 	export let tab = true;
 
@@ -167,7 +167,7 @@
 		/* background: transparent; */
 		background-color: #f3f3f3;
 		font: 400 14px/1.7 var(--font-mono);
-		padding: 24px;
+		padding: 24px 2px;
 	}
 
 	.codemirror-container.flex :global(.CodeMirror) {

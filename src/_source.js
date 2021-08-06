@@ -75,10 +75,10 @@ export const code_2 = `<script>
   const fireWhenReady = () => {
     if (typeof solanaWeb3 != "undefined") {
       ready = true
-      console.log({ solanaWeb3 })
+      // console.log({ solanaWeb3 })
       init()
     } else {
-      console.log("else, try again soon")
+      // console.log("else, try again soon")
       setTimeout(fireWhenReady, 500)
     }
   }

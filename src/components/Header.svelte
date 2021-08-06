@@ -45,9 +45,11 @@
 	<NavbarBrand><h1>Tokenizer<sup class="super">Web</sup></h1></NavbarBrand>
 	<Nav class="ms-auto align-items-baseline" navbar>
 		<NavItem>
-			<NavLink href="https://github.com/douganderson444/">GitHub</NavLink>
+			<NavLink href="https://github.com/DougAnderson444/Tokenizer-Web-Repl"
+				>GitHub</NavLink
+			>
 		</NavItem>
-		<Dropdown inNavbar>
+		<Dropdown inNavbar class="fs-5">
 			<DropdownToggle nav caret>Wallet</DropdownToggle>
 			<DropdownMenu end>
 				<DropdownItem>Sollet</DropdownItem>
@@ -62,9 +64,9 @@
 			</DropdownMenu>
 		</Dropdown>
 		<NavItem>
-			<Button class="button m-2" on:click={previewPage}>Preview 👓</Button>
+			<Button class="button m-2 fs-5" on:click={previewPage}>Preview 👓</Button>
 		</NavItem>
-		<Button class="button m-2" color="info" on:click={publishPage}
+		<Button class="button m-2 fs-5" color="info" on:click={publishPage}
 			>Publish ✨</Button
 		>
 	</Nav>

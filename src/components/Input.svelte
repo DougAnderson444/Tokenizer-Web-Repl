@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Tabs from "./Tabs.svelte";
-	import ModuleEditor from "./ModuleEditor.svelte";
 	import type { Component } from "../types";
 	import { components, current } from "../js/store.js";
 	import { getContext } from "svelte";
@@ -29,8 +28,8 @@
 	function selectComponent({ detail }) {
 		if ($current !== detail) {
 			$current = detail;
-			handle_select(detail);
 		}
+		handle_select(detail);
 	}
 	$: current_component_index = $components.findIndex(({ id }) => {
 		id === $current;
@@ -41,6 +40,3 @@
 </script>
 
 <Tabs {tabs} on:select={selectComponent} on:new={new_component} />
-<section>
-	<ModuleEditor />
-</section>

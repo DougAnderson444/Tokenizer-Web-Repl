@@ -82,64 +82,71 @@
 			} else {
 				console.error(`Could not find component! That's... odd`);
 			}
-			dispatch(
-				"select",
-				$components[$current].id || $components[$components.length - 1].id
-			);
+
+			// reset if necessary
+			$current = $components[$current] ? $current : $components.length - 1;
+			$current = $current;
+
+			dispatch("select", $components[$current].id);
 		}
 	}
 </script>
 
-<ul class="side-buttons">
-	{#each tabs as { name, type, id }}
-		<li
-			class:active={id === $current}
-			class="button"
-			on:click={() => selectComponent(id)}
-			on:dblclick={(e) => e.stopPropagation()}
-		>
-			{#if name == "App" && id === 0}
-				<div class="uneditable">App.{type}</div>
-			{:else if id === editing?.id}
-				<span class="input-sizer">
-					<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
-				</span>
+<div class="tabs">
+	<ul class="side-buttons">
+		{#each tabs as { name, type, id }}
+			<li
+				class:active={id === $current}
+				class="button"
+				on:click={() => selectComponent(id)}
+				on:dblclick={(e) => e.stopPropagation()}
+			>
+				{#if name == "App" && id === 0}
+					<div class="uneditable">App.{type}</div>
+				{:else if id === editing?.id}
+					<span class="input-sizer">
+						<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
+					</span>
 
-				<!-- svelte-ignore a11y-autofocus -->
-				<input
-					autofocus
-					spellcheck={false}
-					bind:value={editing.name}
-					on:focus={selectInput}
-					on:blur={closeEdit}
-					on:keydown={(e) =>
-						e.key === "Enter" &&
-						!isComponentNameUsed(editing) &&
-						e.currentTarget.blur()}
-					class:duplicate={isComponentNameUsed(editing)}
-				/>
-			{:else}
-				<div
-					class="editable"
-					title="edit component name"
-					on:click={() => editTab($components[id])}
-				>
-					{name}.{type}
-				</div>
+					<!-- svelte-ignore a11y-autofocus -->
+					<input
+						autofocus
+						spellcheck={false}
+						bind:value={editing.name}
+						on:focus={selectInput}
+						on:blur={closeEdit}
+						on:keydown={(e) =>
+							e.key === "Enter" &&
+							!isComponentNameUsed(editing) &&
+							e.currentTarget.blur()}
+						class:duplicate={isComponentNameUsed(editing)}
+					/>
+				{:else}
+					<div
+						class="editable"
+						title="edit component name"
+						on:click={() => editTab($components[id])}
+					>
+						{name}.{type}
+					</div>
 
-				<span class="remove" on:click={() => remove($components[id])}>
-					<svg width="12" height="12" viewBox="0 0 24 24">
-						<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
-						<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
-					</svg>
-				</span>
-			{/if}
-		</li>
-	{/each}
-	<li><button on:click={() => dispatch("new")}>+</button></li>
-</ul>
+					<span class="remove" on:click={() => remove($components[id])}>
+						<svg width="12" height="12" viewBox="0 0 24 24">
+							<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
+							<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
+						</svg>
+					</span>
+				{/if}
+			</li>
+		{/each}
+		<li class="button add-sign" on:click={() => dispatch("new")}>➕</li>
+	</ul>
+</div>
 
 <style>
+	.tabs {
+		height: auto;
+	}
 	.active {
 		font-weight: 900;
 		/* text-decoration: underline; */
@@ -189,7 +196,13 @@
 		border-left: 1px solid #ddd;
 		border-right: 1px solid #ddd;
 	}
+
+	.add-sign {
+		padding-right: 12px !important;
+	}
 	ul {
 		padding-left: 0rem;
+		display: flex;
+		flex-wrap: wrap;
 	}
 </style>

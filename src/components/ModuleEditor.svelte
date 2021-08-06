@@ -10,8 +10,10 @@
 	});
 </script>
 
-<div class="editor">
-	<CodeMirror bind:this={editor} lineNumbers={false} on:change={handle_edit} />
+<div class="editor-wrapper">
+	<div class="editor notranslate">
+		<CodeMirror bind:this={editor} lineNumbers={true} on:change={handle_edit} />
+	</div>
 </div>
 
 <style>
@@ -19,6 +21,14 @@
 		border: 1px solid lightblue;
 		border-radius: 3px;
 		margin-bottom: 1em;
-		height: calc(100vh - 10%);
+		height: inherit;
+		/* height: calc(100vh - 7%); */
+	}
+
+	:global(.columns) .editor-wrapper {
+		/* make it easier to interact with scrollbar */
+		padding-right: 8px;
+		height: auto;
+		/* height: 100%; */
 	}
 </style>
