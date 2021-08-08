@@ -9,7 +9,7 @@
 
 	import { code_1, code_2, code_3, code_4 } from "./_source";
 	import type { Component } from "./types";
-	import { components, current } from "./js/store.js";
+	import { components, currentID, currentIndex } from "./js/store.js";
 
 	import { ImmortalDB } from "immortal-db";
 
@@ -152,11 +152,14 @@
 			module_editor = editor;
 		},
 		handle_edit(event) {
-			$components[$current].source = event.detail.value;
+			$components.find(({ id }) => id === $currentID).source =
+				event.detail.value;
 		},
-		handle_select(id) {
-			$current = id;
-			module_editor.update($components[$current].source);
+		handle_select(selectedID) {
+			const match = $components.find(({ id }) => id === selectedID);
+			$currentIndex = $components.findIndex(({ id }) => id === selectedID);
+			$currentID = match.id; // won't let me assign current = findIndex for some reason...
+			module_editor.update(match.source);
 		},
 		editor_focus() {
 			module_editor.focus();
@@ -196,12 +199,6 @@
 			</section>
 		</SplitPane>
 	</div>
-	<!-- <main class="main">
-		{#if mounted && $components}
-			<Input />
-			<Output {compiled} {injectedCSS} bind:srcdoc />
-		{/if}
-	</main> -->
 </div>
 
 <!-- <footer class="footer">Copyright @DougAnderson444 Douglas Anderson</footer> -->

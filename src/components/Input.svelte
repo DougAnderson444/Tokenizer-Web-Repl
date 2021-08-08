@@ -1,8 +1,10 @@
 <script lang="ts">
 	import Tabs from "./Tabs.svelte";
 	import type { Component } from "../types";
-	import { components, current } from "../js/store.js";
+	import { components } from "../js/store.js";
 	import { getContext } from "svelte";
+
+	const MAX_ID = 123456789;
 
 	const { handle_select, editor_focus } = getContext("REPL");
 
@@ -11,32 +13,29 @@
 		return Math.max(...ids);
 	}
 
+	function getRandomInt(min, max) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+	}
+
 	function new_component() {
-		const id = get_max($components) + 1;
+		// const id = get_max($components) + 1;
+		const newID = Math.floor(Math.random() * MAX_ID);
 
 		$components = $components.concat({
-			id,
-			name: `Component${id}`,
+			id: newID,
+			name: `Component${newID}`,
 			type: "svelte",
-			source: `Component ${id}`,
+			source: `Component ${newID}`,
 		});
 
-		$current = id;
-		handle_select(id);
+		handle_select(newID);
 		editor_focus();
 	}
 	function selectComponent({ detail }) {
-		if ($current !== detail) {
-			$current = detail;
-		}
 		handle_select(detail);
 	}
-	$: current_component_index = $components.findIndex(({ id }) => {
-		id === $current;
-		// module_editor.set(component.source, component.type);
-		// module_editor.set(component.source, component.type);
-	});
-	$: tabs = $components.map(({ id, name, type }) => ({ id, name, type }));
 </script>
 
-<Tabs {tabs} on:select={selectComponent} on:new={new_component} />
+<Tabs on:select={selectComponent} on:new={new_component} />

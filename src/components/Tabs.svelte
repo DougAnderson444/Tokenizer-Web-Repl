@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Component, Tab } from "../types";
-	import { current, components } from "../js/store.js";
-
+	import { currentID, components, currentIndex } from "../js/store.js";
 	import { createEventDispatcher, getContext } from "svelte";
 
 	const { editor_focus } = getContext("REPL");
@@ -9,8 +8,6 @@
 	const dispatch = createEventDispatcher<{ select: number; new: undefined }>();
 
 	let editing: Tab;
-
-	export let tabs: Tab[] = [];
 
 	function isComponentNameUsed(editing: Tab): any {
 		return $components.find(
@@ -21,7 +18,7 @@
 	}
 
 	function selectComponent(id) {
-		if ($current !== id) {
+		if ($currentID !== id) {
 			editing = null;
 			dispatch("select", id);
 		}
@@ -43,19 +40,24 @@
 		const match = /(.+)\.(svelte|svx|js)$/.exec(editing.name);
 		// match: Array ["app.svx", "app", "svx"]
 
-		$components[$current].name = match ? match[1] : editing.name;
+		$components.find(({ id }) => id === $currentID).name = match
+			? match[1]
+			: editing.name;
 
 		if (isComponentNameUsed(editing)) {
-			$components[$current].name = $components[$current].name + "_copy";
+			$components.find(({ id }) => id === $currentID).name =
+				$components.find(({ id }) => id === $currentID).name + "_copy";
 		}
 		if (match && match[2]) {
-			$components[$current].type = match[2];
+			$components.find(({ id }) => id === $currentID).type = match[2];
 		}
 
 		editing = null;
 
 		// re-select, in case the type changed
-		dispatch("select", $components[$current].id);
+		dispatch("select", $components.find(({ id }) => id === $currentID).id);
+
+		$components = $components; // to refresh tabs
 
 		// focus the editor, but wait a beat (so key events aren't misdirected)
 		setTimeout(editor_focus);
@@ -67,7 +69,7 @@
 		});
 	}
 
-	function remove(component) {
+	async function remove(component) {
 		let result = confirm(
 			`Are you sure you want to delete ${component.name}.${component.type}?`
 		);
@@ -84,21 +86,24 @@
 			}
 
 			// reset if necessary
-			$current = $components[$current] ? $current : $components.length - 1;
-			$current = $current;
+			$currentIndex = $components[$currentIndex]
+				? $currentIndex
+				: $components.length - 1;
 
-			dispatch("select", $components[$current].id);
+			dispatch("select", $components[$currentIndex].id);
 		}
 	}
 </script>
 
 <div class="tabs">
 	<ul class="side-buttons">
-		{#each tabs as { name, type, id }}
+		{#each $components as { name, type, id }}
 			<li
-				class:active={id === $current}
+				class:active={$components.find(({ id: _id }) => id === _id).id ===
+					$currentID}
 				class="button"
-				on:click={() => selectComponent(id)}
+				on:click={() =>
+					selectComponent($components.find(({ id: _id }) => id === _id).id)}
 				on:dblclick={(e) => e.stopPropagation()}
 			>
 				{#if name == "App" && id === 0}
@@ -125,12 +130,17 @@
 					<div
 						class="editable"
 						title="edit component name"
-						on:click={() => editTab($components[id])}
+						on:click={() =>
+							editTab($components.find(({ id: _id }) => id === _id))}
 					>
 						{name}.{type}
 					</div>
 
-					<span class="remove" on:click={() => remove($components[id])}>
+					<span
+						class="remove"
+						on:click={() =>
+							remove($components.find(({ id: _id }) => id === _id))}
+					>
 						<svg width="12" height="12" viewBox="0 0 24 24">
 							<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
 							<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />

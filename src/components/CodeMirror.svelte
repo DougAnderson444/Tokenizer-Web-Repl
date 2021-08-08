@@ -1,6 +1,6 @@
 <script>
 	import { onMount, createEventDispatcher } from "svelte";
-	import { components, current } from "../js/store.js";
+	import { components, currentIndex, currentID } from "../js/store.js";
 
 	const dispatch = createEventDispatcher();
 
@@ -138,8 +138,7 @@
 		editor.refresh();
 	}
 
-	// $: set($components[$current].source, $components[$current].type);
-	// $: if ($components || $current) update($components[$current].source);
+	$: $currentIndex = $components.findIndex(({ id }) => id === $currentID);
 </script>
 
 <div
@@ -148,7 +147,10 @@
 	bind:offsetWidth={w}
 	bind:offsetHeight={h}
 >
-	<textarea bind:value={$components[$current].source} bind:this={textarea} />
+	<textarea
+		bind:value={$components[$currentIndex].source}
+		bind:this={textarea}
+	/>
 </div>
 
 <style>

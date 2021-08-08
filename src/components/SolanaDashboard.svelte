@@ -20,7 +20,7 @@
 		Token,
 		TOKEN_PROGRAM_ID,
 	} from "@solana/spl-token";
-	import { current, components } from "../js/store.js";
+	import { currentID, components } from "../js/store.js";
 
 	import frontmatter from "@github-docs/frontmatter";
 
@@ -65,7 +65,7 @@
 
 		$components[0].source = newmatter + content;
 		$components = $components; // refresh the codemirror
-		handle_select($current);
+		handle_select($currentID);
 	}
 
 	async function init(endpoint) {

@@ -1,2 +1,2 @@
-export{A as default}from"./index-422050e6.js";
+export{A as default}from"./index-cc254931.js";
 //# sourceMappingURL=index.js.map
