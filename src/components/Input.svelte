@@ -3,6 +3,11 @@
 	import type { Component } from "../types";
 	import { components } from "../js/store.js";
 	import { getContext } from "svelte";
+	import IPFSSaver from "./IPFSSaver.svelte";
+
+	export let saveStatus;
+	export let rootCID;
+	export let serializedSource;
 
 	const MAX_ID = 123456789;
 
@@ -39,3 +44,4 @@
 </script>
 
 <Tabs on:select={selectComponent} on:new={new_component} />
+<IPFSSaver {saveStatus} bind:rootCID {serializedSource} />

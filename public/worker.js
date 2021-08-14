@@ -2400,7 +2400,7 @@ function basename(path, ext) {
 function extname(path) {
   return splitPath(path)[3];
 }
-var require$$1 = {
+var path = {
   extname: extname,
   basename: basename,
   dirname: dirname,
@@ -2429,6 +2429,21 @@ var substr = 'ab'.substr(-1) === 'b' ?
         return str.substr(start, len);
     }
 ;
+
+var path$1 = /*#__PURE__*/Object.freeze({
+            __proto__: null,
+            resolve: resolve,
+            normalize: normalize,
+            isAbsolute: isAbsolute,
+            join: join,
+            relative: relative,
+            sep: sep,
+            delimiter: delimiter,
+            dirname: dirname,
+            basename: basename,
+            extname: extname,
+            'default': path
+});
 
 var inherits;
 if (typeof Object.create === 'function'){
@@ -4298,7 +4313,7 @@ var constants$1 = {
     CHAR_UNDERSCORE: 95,
     CHAR_VERTICAL_LINE: 124,
     CHAR_ZERO_WIDTH_NOBREAK_SPACE: 65279,
-    SEP: require$$1.sep,
+    SEP: path.sep,
     /**
      * Create EXTGLOB_CHARS
      */
@@ -4343,7 +4358,7 @@ var utils$1 = createCommonjsModule$1(function (module, exports) {
         if (options && typeof options.windows === 'boolean') {
             return options.windows;
         }
-        return win32 === true || require$$1.sep === '\\';
+        return win32 === true || path.sep === '\\';
     };
     exports.escapeLast = (input, char, lastIdx) => {
         let idx = input.lastIndexOf(char, lastIdx);
@@ -5452,7 +5467,7 @@ picomatch.test = (input, regex, options, { glob, posix } = {}) => {
  */
 picomatch.matchBase = (input, glob, options, posix = utils$1.isWindows(options)) => {
     let regex = glob instanceof RegExp ? glob : picomatch.makeRe(glob, options);
-    return regex.test(require$$1.basename(input));
+    return regex.test(path.basename(input));
 };
 /**
  * Returns true if **any** of the given glob `patterns` match the specified `string`.
@@ -25773,6 +25788,8 @@ var empty$1 = /*#__PURE__*/Object.freeze({
 });
 
 var require$$0 = getCjsExportFromNamespace(empty$1);
+
+var require$$1 = getCjsExportFromNamespace(path$1);
 
 var readWasm = createCommonjsModule(function (module) {
 if (typeof fetch === "function") {

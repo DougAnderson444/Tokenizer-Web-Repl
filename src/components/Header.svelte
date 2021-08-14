@@ -66,7 +66,7 @@
 		<NavItem>
 			<Button class="button m-2 fs-5" on:click={previewPage}>Preview 👓</Button>
 		</NavItem>
-		<Button class="button m-2 fs-5" color="info" on:click={publishPage}
+		<Button class="button m-2 fs-5" color="success" on:click={publishPage}
 			>Publish ✨</Button
 		>
 	</Nav>
@@ -74,7 +74,7 @@
 <SolanaDashboard />
 <Arweave {serializedSource} bind:preview bind:publish />
 
-<style>
+<style lang="scss">
 	.super {
 		font-size: 0.75em;
 		position: relative;

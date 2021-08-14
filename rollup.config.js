@@ -127,73 +127,73 @@ export default [
     },
     onwarn
   },
-  {
-    input: 'src/index.js',
-    output: [{
-      sourcemap: true,
-      format: 'es',
-      dir: pkg.module
-    },
-    {
-      sourcemap: true,
-      format: 'umd',
-      name,
-      file: pkg.main,
-      inlineDynamicImports: true
-    }],
-    plugins: [
-      mdsvex_transform(),
-      json(),
-      svelte({
-        extensions: ['.svelte', '.svx'],
-        preprocess: [
-          mdsvex({ extension: '.svx' }),
-          sveltePreprocess()
-        ]
-      }),
-      css({ output: 'bundle.css' }),
+  // {
+  //   input: 'src/index.js',
+  //   output: [{
+  //     sourcemap: true,
+  //     format: 'es',
+  //     dir: pkg.module
+  //   },
+  //   {
+  //     sourcemap: true,
+  //     format: 'umd',
+  //     name,
+  //     file: pkg.main,
+  //     inlineDynamicImports: true
+  //   }],
+  //   plugins: [
+  //     mdsvex_transform(),
+  //     json(),
+  //     svelte({
+  //       extensions: ['.svelte', '.svx'],
+  //       preprocess: [
+  //         mdsvex({ extension: '.svx' }),
+  //         sveltePreprocess()
+  //       ]
+  //     }),
+  //     css({ output: 'bundle.css' }),
 
-      resolve({
-        browser: true,
-        dedupe: ['svelte']
-      }),
-      commonjs(),
-      globals(),
-      builtins(),
-      typescript(),
-      terser()
-    ],
-    watch: {
-      clearScreen: false
-    },
-    onwarn
-  },
-  {
-    input: 'src/worker.ts',
-    output: {
-      sourcemap: true,
-      format: 'esm',
-      name: 'app',
-      file: 'public/worker.js',
-      plugins: [
-        // terser()
-      ]
-    },
-    plugins: [
-      json(),
-      resolve({
-        browser: true,
-        dedupe: ['svelte']
-      }),
-      commonjs(),
-      globals(),
-      builtins(),
-      typescript()
-      // terser()
-    ],
-    watch: {
-      clearScreen: false
-    },
-    onwarn
-  }
+  //     resolve({
+  //       browser: true,
+  //       dedupe: ['svelte']
+  //     }),
+  //     commonjs(),
+  //     globals(),
+  //     builtins(),
+  //     typescript(),
+  //     terser()
+  //   ],
+  //   watch: {
+  //     clearScreen: false
+  //   },
+  //   onwarn
+  // },
+  // {
+  //   input: 'src/worker.ts',
+  //   output: {
+  //     sourcemap: true,
+  //     format: 'esm',
+  //     name: 'app',
+  //     file: 'public/worker.js',
+  //     plugins: [
+  //       // terser()
+  //     ]
+  //   },
+  //   plugins: [
+  //     json(),
+  //     resolve({
+  //       browser: true,
+  //       dedupe: ['svelte']
+  //     }),
+  //     commonjs(),
+  //     globals(),
+  //     builtins(),
+  //     typescript()
+  //     // terser()
+  //   ],
+  //   watch: {
+  //     clearScreen: false
+  //   },
+  //   onwarn
+  // }
 ]

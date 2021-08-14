@@ -62,7 +62,7 @@
 		// init TestWeave on the top of arweave
 		// console.log({ TestWeave });
 		testWeave = await TestWeave.default.init(arweave);
-		console.log({ testWeave });
+		// console.log({ testWeave });
 
 		let endpointResponse = await fetch(coinEndpoint);
 		let responseJson = await endpointResponse.json();
