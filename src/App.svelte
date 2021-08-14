@@ -12,6 +12,8 @@
 	import { components, currentID, currentIndex } from "./js/store.js";
 
 	import { ImmortalDB } from "immortal-db";
+	import Saver from "./js/ipfs-saver.js";
+	import { is_browser } from "./js/env.js";
 
 	export let orientation = "columns";
 	export let fixed = false;
@@ -19,9 +21,21 @@
 
 	let type, pos;
 	let serializedSource;
+	let rootCID;
+
+	// const worker = new Worker("./worker.js");
+	let worker;
+	let workersUrl = "worker.js";
+
+	let compiled;
+	let srcdoc;
+	let injectedCSS;
+	let module_editor;
+	let saveStatus;
+	let saver;
 
 	$: type = orientation === "rows" ? "vertical" : "horizontal";
-	$: pos = fixed ? fixedPos : orientation === "rows" ? 50 : 60;
+	$: pos = fixed ? fixedPos : orientation === "rows" ? 50 : 50;
 
 	const COMPONENTS_KEY = "components";
 
@@ -52,6 +66,14 @@
 		},
 	];
 
+	// TODO: cache & get feedback message, just like Bundler
+	// 	{
+	// 	workersUrl,
+	// 	onstatus: (message) => {
+	// 		saveStatus = message;
+	// 	},
+	// }
+
 	let mounted = false;
 	components.set(defaultComps);
 
@@ -61,6 +83,8 @@
 			global.Buffer = Buffer.Buffer;
 		});
 
+		// init IPFS saver
+		saver = is_browser && new Saver();
 		// check for last used components
 		const def: null = null;
 		const storedValue = await ImmortalDB.get(COMPONENTS_KEY, def);
@@ -77,15 +101,6 @@
 		}
 		mounted = true;
 	});
-
-	// const worker = new Worker("./worker.js");
-	let worker;
-	let workersUrl = "worker.js";
-
-	let compiled;
-	let srcdoc;
-	let injectedCSS;
-	let module_editor;
 
 	try {
 		worker = new Worker(workersUrl);
@@ -128,8 +143,19 @@
 
 	let timer = 1;
 
-	worker.addEventListener("message", (event) => {
-		if (!timer) compiled = event.data.output;
+	worker.addEventListener("message", async (event) => {
+		if (timer) return; // ignore if there's another worker thread going, wait for that output
+		// no timer left, so use this compiled output
+		compiled = event.data.output;
+
+		// also update store
+		await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify($components));
+
+		// save to IPFS, or where ever
+		rootCID = saver.save({
+			source: $components,
+			compiled,
+		});
 	});
 
 	async function compile(_components: Component[]): Promise<void> {
@@ -138,11 +164,8 @@
 			clearTimeout(timer); // cancel any exisitng waiting
 		}
 		timer = setTimeout(async () => {
-			// console.log("compiling");
 			timer = 0;
 			worker.postMessage(_components);
-			// also update store
-			await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
 		}, 400);
 	}
 
@@ -154,6 +177,7 @@
 		handle_edit(event) {
 			$components.find(({ id }) => id === $currentID).source =
 				event.detail.value;
+			$components = $components; // trigger reactivity in svelte store
 		},
 		handle_select(selectedID) {
 			const match = $components.find(({ id }) => id === selectedID);
@@ -164,10 +188,22 @@
 		editor_focus() {
 			module_editor.focus();
 		},
+		// navigate(item) {
+		// 	const match = /^(.+)\.(\w+)$/.exec(item.filename);
+		// 	if (!match) return; // ???
+
+		// 	const [, name, type] = match;
+		// 	const component = $components.find(
+		// 		(c) => c.name === name && c.type === type
+		// 	);
+		// 	handle_select(component);
+
+		// 	// TODO select the line/column in question
+		// }
 	});
 
 	// compile whenever non-null components change ($:)
-	$: if ($components) compile($components);
+	$: $components && compile($components);
 
 	// $: save(compiled);
 </script>
@@ -186,11 +222,11 @@
 <div class="contain" class:orientation>
 	<div class="top-half">
 		<Header bind:serializedSource />
-		<Input />
+		<Input {saveStatus} {rootCID} {serializedSource} />
 	</div>
 	<div class="bottom-half">
 		<SplitPane {type} {pos} {fixed}>
-			<section slot="a">
+			<section slot="a" style="height: 100%;">
 				<ModuleEditor />
 			</section>
 
@@ -235,19 +271,5 @@
 	.contain :global(section) > :global(*):last-child {
 		width: 100%;
 		height: 100%;
-	}
-
-	@media all and (min-width: 800px) {
-		.main {
-			flex: 3 0px;
-		}
-
-		.main {
-			order: 2;
-		}
-
-		.footer {
-			order: 4;
-		}
 	}
 </style>
