@@ -75,7 +75,7 @@
 	// }
 
 	let mounted = false;
-	components.set(defaultComps);
+	// components.set(defaultComps);
 
 	onMount(async () => {
 		// setup some globals
@@ -226,7 +226,9 @@
 	<div class="bottom-half">
 		<SplitPane {type} {pos} {fixed}>
 			<section slot="a" style="height: 100%;">
-				<ModuleEditor />
+				{#if $components}
+					<ModuleEditor />
+				{/if}
 			</section>
 
 			<section slot="b" style="height: 100%;">
