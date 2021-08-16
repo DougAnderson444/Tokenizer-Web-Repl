@@ -138,7 +138,8 @@
 		editor.refresh();
 	}
 
-	$: $currentIndex = $components.findIndex(({ id }) => id === $currentID);
+	$: if ($components)
+		$currentIndex = $components.findIndex(({ id }) => id === $currentID);
 </script>
 
 <div
