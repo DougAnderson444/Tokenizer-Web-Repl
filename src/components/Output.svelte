@@ -94,7 +94,7 @@
 							})
 						})
 					} else {
-						console.log('no pre-existing src64')
+						// console.log('no pre-existing src64')
 					}
 					
 					async function fetchedBlobToDataURL (blobUrl) {
