@@ -97,58 +97,60 @@
 
 <div class="tabs">
 	<ul class="side-buttons">
-		{#each $components as { name, type, id }}
-			<li
-				class:active={$components.find(({ id: _id }) => id === _id).id ===
-					$currentID}
-				class="button"
-				on:click={() =>
-					selectComponent($components.find(({ id: _id }) => id === _id).id)}
-				on:dblclick={(e) => e.stopPropagation()}
-			>
-				{#if name == "App" && id === 0}
-					<div class="uneditable">App.{type}</div>
-				{:else if id === editing?.id}
-					<span class="input-sizer">
-						<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
-					</span>
+		{#if $components}
+			{#each $components as { name, type, id }}
+				<li
+					class:active={$components.find(({ id: _id }) => id === _id).id ===
+						$currentID}
+					class="button"
+					on:click={() =>
+						selectComponent($components.find(({ id: _id }) => id === _id).id)}
+					on:dblclick={(e) => e.stopPropagation()}
+				>
+					{#if name == "App" && id === 0}
+						<div class="uneditable">App.{type}</div>
+					{:else if id === editing?.id}
+						<span class="input-sizer">
+							<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
+						</span>
 
-					<!-- svelte-ignore a11y-autofocus -->
-					<input
-						autofocus
-						spellcheck={false}
-						bind:value={editing.name}
-						on:focus={selectInput}
-						on:blur={closeEdit}
-						on:keydown={(e) =>
-							e.key === "Enter" &&
-							!isComponentNameUsed(editing) &&
-							e.currentTarget.blur()}
-						class:duplicate={isComponentNameUsed(editing)}
-					/>
-				{:else}
-					<div
-						class="editable"
-						title="edit component name"
-						on:click={() =>
-							editTab($components.find(({ id: _id }) => id === _id))}
-					>
-						{name}.{type}
-					</div>
+						<!-- svelte-ignore a11y-autofocus -->
+						<input
+							autofocus
+							spellcheck={false}
+							bind:value={editing.name}
+							on:focus={selectInput}
+							on:blur={closeEdit}
+							on:keydown={(e) =>
+								e.key === "Enter" &&
+								!isComponentNameUsed(editing) &&
+								e.currentTarget.blur()}
+							class:duplicate={isComponentNameUsed(editing)}
+						/>
+					{:else}
+						<div
+							class="editable"
+							title="edit component name"
+							on:click={() =>
+								editTab($components.find(({ id: _id }) => id === _id))}
+						>
+							{name}.{type}
+						</div>
 
-					<span
-						class="remove"
-						on:click={() =>
-							remove($components.find(({ id: _id }) => id === _id))}
-					>
-						<svg width="12" height="12" viewBox="0 0 24 24">
-							<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
-							<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
-						</svg>
-					</span>
-				{/if}
-			</li>
-		{/each}
+						<span
+							class="remove"
+							on:click={() =>
+								remove($components.find(({ id: _id }) => id === _id))}
+						>
+							<svg width="12" height="12" viewBox="0 0 24 24">
+								<line stroke="#999" x1="18" y1="6" x2="6" y2="18" />
+								<line stroke="#999" x1="6" y1="6" x2="18" y2="18" />
+							</svg>
+						</span>
+					{/if}
+				</li>
+			{/each}
+		{/if}
 		<li class="button add-sign" on:click={() => dispatch("new")}>➕</li>
 	</ul>
 </div>
