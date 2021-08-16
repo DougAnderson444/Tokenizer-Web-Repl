@@ -163,7 +163,7 @@ self.addEventListener(
 					},
 					// transform allows us to compile our non-js code
 					// id is the filepath
-					transform(code: string, id: string) {
+					async transform(code: string, id: string) {
 
 						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
@@ -172,8 +172,7 @@ self.addEventListener(
 							// not a svelte file, scan it formalicious code
 							const GLOBALS = ["Math", "parseInt", "parseFloat"]
 							try {
-								const result = scanCode(code, GLOBALS)
-								console.log('result', result)
+								const result = await scanCode(code, GLOBALS)
 							} catch (error) {
 								console.error("Scan failed for " id, error.message)
 							}
