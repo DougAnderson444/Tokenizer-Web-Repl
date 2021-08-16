@@ -112,7 +112,7 @@ export const code_2 = `<script>
   const checkHasAccess = async () => {
 		let params = new URLSearchParams(document.location.search);
 		account = document.location.origin === "null" ? account : params.get("account"); 
-	 	console.log("checking acccount", {account}, document.location)
+	 	console.log("checking acccount", {account})
     try {
       let tokenAccounts = await connection.getParsedTokenAccountsByOwner(
         new solanaWeb3.PublicKey(account),
