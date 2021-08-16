@@ -2,6 +2,7 @@ import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
 import json from 'rollup-plugin-json'
+import { scanCode } from "./js/uwu_bundled.js"
 
 // import * as asc from "assemblyscript/cli/asc"
 // const { binary, text, stdout, stderr } = asc.compileString(`...`, { optimize: 2 });
@@ -166,7 +167,18 @@ self.addEventListener(
 
 						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
-						if (!/\.svelte$|\.svx$/.test(id)) return null
+						if (!/\.svelte$|\.svx$/.test(id)) {
+							console.log('scanning ', id)
+							// not a svelte file, scan it formalicious code
+							const GLOBALS = ["Math", "parseInt", "parseFloat"]
+							try {
+								const result = scanCode(code, GLOBALS)
+								console.log('result', result)
+							} catch (error) {
+								console.error("Scan failed for " id, error.message)
+							}
+							return null
+						}
 
 						const name = id
 							.split('/')

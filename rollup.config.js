@@ -20,6 +20,8 @@ import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import sanitize from 'rehype-sanitize'
 
+import rust from "@wasm-tool/rollup-plugin-rust"; // for uwu wasm
+
 // import { highlight, highlighter } from './prism/prism.js'
 
 import { extname } from 'path'
@@ -127,6 +129,7 @@ export default [
     },
     onwarn
   },
+  // Optional rollup for just the component (not the app)
   // {
   //   input: 'src/index.js',
   //   output: [{
@@ -168,32 +171,35 @@ export default [
   //   },
   //   onwarn
   // },
-  // {
-  //   input: 'src/worker.ts',
-  //   output: {
-  //     sourcemap: true,
-  //     format: 'esm',
-  //     name: 'app',
-  //     file: 'public/worker.js',
-  //     plugins: [
-  //       // terser()
-  //     ]
-  //   },
-  //   plugins: [
-  //     json(),
-  //     resolve({
-  //       browser: true,
-  //       dedupe: ['svelte']
-  //     }),
-  //     commonjs(),
-  //     globals(),
-  //     builtins(),
-  //     typescript()
-  //     // terser()
-  //   ],
-  //   watch: {
-  //     clearScreen: false
-  //   },
-  //   onwarn
-  // }
+  {
+    input: 'src/worker.ts',
+    output: {
+      sourcemap: true,
+      format: 'esm',
+      name: 'app',
+      file: 'public/worker.js',
+      plugins: [
+        // terser()
+      ]
+    },
+    plugins: [
+      rust({
+        inlineWasm: true // include in worker
+      }),
+      json(),
+      resolve({
+        browser: true,
+        dedupe: ['svelte']
+      }),
+      commonjs(),
+      globals(),
+      builtins(),
+      typescript()
+      // terser()
+    ],
+    watch: {
+      clearScreen: false
+    },
+    onwarn
+  }
 ]

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import Saver from "../js/ipfs-saver.js";
 	import { is_browser } from "../js/env.js";
+	import Message from "../components/Message.svelte";
+
+	export let error; // TODO should this be exposed as a prop?
+	export let status;
+	export let truncate;
 
 	// import okaidia from "../../prism/okaidia.js"; // prism CSS for code
 	export let srcdoc: string;
@@ -159,13 +164,32 @@
 		<!-- promise is pending -->
 		waiting for the promise to resolve...
 	{:then rootCID}
-		<!-- promise was fulfilled -->
-		<a href="https://ipfs.io/ipfs/{rootCID.toString()}" target="_blank">
-			{rootCID.toString()}</a
+		<!-- promise was fulfilled --><a
+			href="https://ipfs.io/ipfs/{rootCID.toString()}?account="
+			target="_blank"
+		>
+			{rootCID.toString()}↗️</a
 		>
 	{:catch error}
 		<!-- promise was rejected -->
 		Something went wrong with save: {error.message}
 	{/await}
 {/if}
-<iframe title="Rendered REPL" bind:this={iframe} {srcdoc} />
+
+<div class="iframe-container">
+	<div style="height: 100%">
+		<iframe title="Rendered REPL" bind:this={iframe} {srcdoc} />
+	</div>
+
+	<div class="overlay">
+		{#if error}
+			<Message kind={"error"} details={error} />
+		{:else if status}
+			<Message kind={"info"} {truncate}>
+				{status || "loading Svelte compiler..."}
+			</Message>
+		{/if}
+	</div>
+</div>
+
+<style></style>

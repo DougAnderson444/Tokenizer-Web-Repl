@@ -27,7 +27,7 @@
 	let worker;
 	let workersUrl = "worker.js";
 
-	let compiled;
+	let compiled, warnings;
 	let srcdoc;
 	let injectedCSS;
 	let module_editor;
@@ -147,9 +147,7 @@
 		if (timer) return; // ignore if there's another worker thread going, wait for that output
 		// no timer left, so use this compiled output
 		compiled = event.data.output;
-
-		// also update store
-		await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify($components));
+		warnings = event.data.warnings;
 
 		// save to IPFS, or where ever
 		rootCID = saver.save({
@@ -166,6 +164,9 @@
 		timer = setTimeout(async () => {
 			timer = 0;
 			worker.postMessage(_components);
+
+			// also update store
+			await ImmortalDB.set(COMPONENTS_KEY, JSON.stringify(_components));
 		}, 400);
 	}
 
@@ -183,7 +184,7 @@
 			const match = $components.find(({ id }) => id === selectedID);
 			$currentIndex = $components.findIndex(({ id }) => id === selectedID);
 			$currentID = match.id; // won't let me assign current = findIndex for some reason...
-			module_editor.update(match.source);
+			module_editor.set(match.source, match.type);
 		},
 		editor_focus() {
 			module_editor.focus();
@@ -204,8 +205,6 @@
 
 	// compile whenever non-null components change ($:)
 	$: $components && compile($components);
-
-	// $: save(compiled);
 </script>
 
 <svelte:head>

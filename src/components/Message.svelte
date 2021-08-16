@@ -1,8 +1,8 @@
 <script>
-	import { getContext } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { getContext } from "svelte";
+	import { slide } from "svelte/transition";
 
-	const { navigate } = getContext('REPL');
+	const { navigate } = getContext("REPL");
 
 	export let kind;
 	export let details = null;
@@ -10,7 +10,7 @@
 	export let truncate;
 
 	function message(details) {
-		let str = details.message || '[missing message]';
+		let str = details.message || "[missing message]";
 
 		let loc = [];
 
@@ -20,9 +20,24 @@
 
 		if (details.start) loc.push(details.start.line, details.start.column);
 
-		return str + (loc.length ? ` (${loc.join(':')})` : ``);
-	};
+		return str + (loc.length ? ` (${loc.join(":")})` : ``);
+	}
 </script>
+
+<div
+	in:slide={{ delay: 150, duration: 100 }}
+	out:slide={{ duration: 100 }}
+	class="message {kind}"
+	class:truncate
+>
+	{#if details}
+		<p class:navigable={details.filename} on:click={() => navigate(details)}>
+			{message(details)}
+		</p>
+	{:else}
+		<slot />
+	{/if}
+</div>
 
 <style>
 	.message {
@@ -39,7 +54,7 @@
 	}
 
 	.message::before {
-		content: '!';
+		content: "!";
 		position: absolute;
 		left: 12px;
 		top: 10px;
@@ -78,14 +93,3 @@
 		background-color: var(--second);
 	}
 </style>
-
-<div in:slide={{delay: 150, duration: 100}} out:slide={{duration: 100}} class="message {kind}" class:truncate>
-	{#if details}
-		<p
-			class:navigable={details.filename}
-			on:click="{() => navigate(details)}"
-		>{message(details)}</p>
-	{:else}
-		<slot></slot>
-	{/if}
-</div>

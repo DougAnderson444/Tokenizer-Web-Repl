@@ -38,16 +38,18 @@
     "@github-docs/frontmatter": "^1.3.1",
     "@solana/spl-token": "^0.1.5",
     "@solana/web3.js": "^1.17.0",
+    "@wasm-tool/rollup-plugin-rust": "^1.0.7",
     "buffer": "^6.0.3",
     "immortal-db": "^1.1.0",
     "inline-source": "^7.2.0",
+    "ipfs-browser-global": "github:DougAnderson444/ipfs-browser-global",
     "mdsvex": "^0.9.0",
     "prism-svelte": "^0.4.7",
     "prismjs": "^1.23.0",
     "sass": "^1.37.5",
     "sirv-cli": "^1.0.0",
     "terser": "^5.7.0",
-    "yootils": "^0.3.1",
-    "ipfs-browser-global": "github:DougAnderson444/ipfs-browser-global"
+    "uwu_wasm": "file:../uwu/crates/uwu-wasm/pkg",
+    "yootils": "^0.3.1"
   }
 }
