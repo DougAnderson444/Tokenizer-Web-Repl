@@ -4,18 +4,18 @@ This app allows us to build web3 app pages (SPA) in the browser through the brow
 
 The REPL accepts:
 
-[x] - Markdown (MD)
-[x] - Markdown Svex (MDSVEX)
-[x] - Javascript (JS)
-[x] - Svelte 
+- [x] Markdown (MD)
+- [x] Markdown Svex (MDSVEX)
+- [x] Javascript (JS)
+- [x] Svelte 
 
 ...then compiles into a single page app.
 
 That can be saved/deployed to IPFS, pinned on the Arweave permaweb, and tokenized to Solana.
 
-[x] - IPFS
-[x] - Arweave 
-[] - Hypercore 
+- [x] IPFS
+- [x] Arweave 
+- [] Hypercore 
 
 
 ## Tokenization 
