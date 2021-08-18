@@ -20,6 +20,7 @@ importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
 
 const mode = 'dom'
 const warnings = []
+const diagnostics: Map<string, string>  = new Map();
 const cache: Map<string, any>  = new Map();
 
 const component_lookup: Map<string, Component> = new Map();
@@ -168,13 +169,15 @@ self.addEventListener(
 						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
 						if (!/\.svelte$|\.svx$/.test(id)) {
-							console.log('scanning ', id)
+							// console.log('scanning ', id)
 							// not a svelte file, scan it formalicious code
 							const GLOBALS = ["Math", "parseInt", "parseFloat"]
 							try {
-								const result = await scanCode(code, GLOBALS)
+								// const result = await scanCode(code, GLOBALS)
+								// diagnostics.set(id, result)
 							} catch (error) {
 								console.error("Scan failed for " id, error.message)
+								diagnostics.set(id, "Scan failed " + error.message)
 							}
 							return null
 						}
@@ -243,6 +246,6 @@ self.addEventListener(
 
 		output = (await minify(output)).code; //, { sourceMap: true }
 
-		self.postMessage({ output, warnings });
+		self.postMessage({ output, warnings, diagnostics });
 	}
 );

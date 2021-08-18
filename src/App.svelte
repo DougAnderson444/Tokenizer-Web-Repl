@@ -27,7 +27,7 @@
 	let worker;
 	let workersUrl = "worker.js";
 
-	let compiled, warnings;
+	let compiled, warnings, diagnostics;
 	let srcdoc;
 	let injectedCSS;
 	let module_editor;
@@ -148,6 +148,7 @@
 		// no timer left, so use this compiled output
 		compiled = event.data.output;
 		warnings = event.data.warnings;
+		diagnostics = event.data.diagnostics;
 
 		// save to IPFS, or where ever
 		rootCID = saver.save({
@@ -221,7 +222,7 @@
 <div class="contain" class:orientation>
 	<div class="top-half">
 		<Header bind:serializedSource />
-		<Input {saveStatus} {rootCID} {serializedSource} />
+		<Input {diagnostics} {saveStatus} {rootCID} {serializedSource} />
 	</div>
 	<div class="bottom-half">
 		<SplitPane {type} {pos} {fixed}>
