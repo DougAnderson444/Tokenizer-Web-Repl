@@ -26,7 +26,7 @@
 
 	function editTab(params) {
 		const { id, name, type } = params;
-		if (editing?.id !== id) {
+		if (editing && editing.id !== id) {
 			editing = {
 				id,
 				name,
@@ -109,7 +109,7 @@
 				>
 					{#if name == "App" && id === 0}
 						<div class="uneditable">App.{type}</div>
-					{:else if id === editing?.id}
+					{:else if editing && id === editing.id}
 						<span class="input-sizer">
 							<!-- {editing.name + (/\./.test(editing.name) ? "" : `.${editing.type}`)} -->
 						</span>
