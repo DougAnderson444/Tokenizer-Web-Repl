@@ -2,8 +2,8 @@ import type { Component } from "./types"; // eslint-disable-line
 
 import * as rollup from "rollup/dist/es/rollup.browser.js";
 import json from 'rollup-plugin-json'
-import { scanCode } from "./js/uwu_bundled.js"
 
+// TODO: Future feature, Add option of access logic as assembly script
 // import * as asc from "assemblyscript/cli/asc"
 // const { binary, text, stdout, stderr } = asc.compileString(`...`, { optimize: 2 });
 
@@ -14,7 +14,7 @@ const CDN_URL = "https://cdn.jsdelivr.net/npm";
 importScripts(`${CDN_URL}/svelte/compiler.js`); // @3.35.0 importScripts method of the WorkerGlobalScope interface synchronously imports one or more scripts into the worker's scope
 
 // import the mdsvex worker
-importScripts(`${CDN_URL}/mdsvex/dist/mdsvex.js`)
+importScripts(`${CDN_URL}/mdsvex/dist/browser-umd.js`)
 
 // importScripts(`/mdsvex.js`)
 
@@ -168,19 +168,7 @@ self.addEventListener(
 
 						// our only transforms are to compile svelte components and svx files
 						// svelte is avilable to us because we did importScripts at the top
-						if (!/\.svelte$|\.svx$/.test(id)) {
-							// console.log('scanning ', id)
-							// not a svelte file, scan it formalicious code
-							const GLOBALS = ["Math", "parseInt", "parseFloat"]
-							try {
-								// const result = await scanCode(code, GLOBALS)
-								// diagnostics.set(id, result)
-							} catch (error) {
-								console.error("Scan failed for " id, error.message)
-								diagnostics.set(id, "Scan failed " + error.message)
-							}
-							return null
-						}
+						if (!/\.svelte$|\.svx$/.test(id)) return null
 
 						const name = id
 							.split('/')
@@ -208,7 +196,7 @@ self.addEventListener(
 									{
 										generate: mode,
 										format: 'esm',
-										dev: true,
+										dev: false,
 										name,
 										filename: name + '.svelte'
 									},

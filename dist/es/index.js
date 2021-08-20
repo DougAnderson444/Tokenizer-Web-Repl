@@ -1,2 +1,2 @@
-export{A as default}from"./index-e8aa7bfb.js";
+export { R as default } from './index2.js';
 //# sourceMappingURL=index.js.map

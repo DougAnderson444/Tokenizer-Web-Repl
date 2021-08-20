@@ -42,7 +42,7 @@
 </svelte:head>
 
 <Navbar color="light" light expand="sm">
-	<NavbarBrand><h1>Tokenizer<sup class="super">Web</sup></h1></NavbarBrand>
+	<NavbarBrand><h1>Web3<sup class="super">REPL</sup></h1></NavbarBrand>
 	<Nav class="ms-auto align-items-baseline" navbar>
 		<NavItem>
 			<NavLink href="https://github.com/DougAnderson444/Tokenizer-Web-Repl"

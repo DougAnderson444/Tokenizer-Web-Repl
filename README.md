@@ -15,10 +15,12 @@ That can be saved/deployed to IPFS, pinned on the Arweave permaweb, and tokenize
 
 - [x] IPFS
 - [x] Arweave 
-- [] Hypercore 
+- [ ] Hypercore 
 
 
 ## Tokenization 
+
+Tokenization allows us to control ownership and access to assets. If you hold the token, you can be proven as the owner of something. If you hold the token, you can have the rights to access some asset.
 
 This REPL experiments with tokenizing single page app to Solana.
 

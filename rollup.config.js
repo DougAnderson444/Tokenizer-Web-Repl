@@ -20,7 +20,7 @@ import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import sanitize from 'rehype-sanitize'
 
-import rust from "@wasm-tool/rollup-plugin-rust"; // for uwu wasm
+import webWorkerLoader from 'rollup-plugin-web-worker-loader';
 
 // import { highlight, highlighter } from './prism/prism.js'
 
@@ -92,6 +92,82 @@ function serve () {
 
 export default [
   {
+    input: 'src/worker.ts',
+    output: [
+      {
+      sourcemap: true,
+      format: 'esm',
+      name: 'app',
+      file: 'src/worker.js',
+      plugins: [
+        // terser()
+      ]
+    }
+    ],
+    plugins: [
+      json(),
+      resolve({
+        browser: true,
+        dedupe: ['svelte']
+      }),
+      commonjs(),
+      globals(),
+      builtins(),
+      typescript()
+      // terser()
+    ],
+    watch: {
+      clearScreen: false
+    },
+    onwarn
+  },
+  // Optional rollup for just the component (not the app part)
+  {
+    input: 'src/index.js',
+    output: [{
+      sourcemap: true,
+      format: 'es',
+      dir: pkg.module,
+      chunkFileNames: "[name].js",
+      entryFileNames: "[name].js"
+    }
+    ,{
+      sourcemap: true,
+      format: 'umd',
+      name,
+      file: pkg.main,
+      inlineDynamicImports: true
+    }
+    ],
+    plugins: [
+      webWorkerLoader({
+        targetPlatform: "auto",
+        sourcemap: false,
+      }),
+      mdsvex_transform(),
+      json(),
+      svelte({
+        extensions: ['.svelte', '.svx'],
+        preprocess: [
+          mdsvex({ extension: '.svx' }),
+          sveltePreprocess()
+        ]
+      }),
+      css({ output: 'bundle.css' }),
+
+      resolve({
+        browser: true,
+        dedupe: ['svelte']
+      }),
+      commonjs(),
+      globals(),
+      builtins(),
+      typescript(),
+      // terser()
+    ],
+    onwarn
+  },
+  {
     input: 'src/main.ts',
     output: {
       sourcemap: true,
@@ -101,6 +177,10 @@ export default [
       inlineDynamicImports: true
     },
     plugins: [
+      webWorkerLoader({
+        targetPlatform: "auto",
+        sourcemap: false,
+      }),
       mdsvex_transform(),
       json(),
       svelte({
@@ -123,79 +203,6 @@ export default [
       !production && serve(),
       !production && livereload('public'),
       production && terser()
-    ],
-    watch: {
-      clearScreen: false
-    },
-    onwarn
-  },
-  // Optional rollup for just the component (not the app)
-  {
-    input: 'src/index.js',
-    output: [{
-      sourcemap: true,
-      format: 'es',
-      dir: pkg.module
-    },
-    {
-      sourcemap: true,
-      format: 'umd',
-      name,
-      file: pkg.main,
-      inlineDynamicImports: true
-    }],
-    plugins: [
-      mdsvex_transform(),
-      json(),
-      svelte({
-        extensions: ['.svelte', '.svx'],
-        preprocess: [
-          mdsvex({ extension: '.svx' }),
-          sveltePreprocess()
-        ]
-      }),
-      css({ output: 'bundle.css' }),
-
-      resolve({
-        browser: true,
-        dedupe: ['svelte']
-      }),
-      commonjs(),
-      globals(),
-      builtins(),
-      typescript(),
-      terser()
-    ],
-    watch: {
-      clearScreen: false
-    },
-    onwarn
-  },
-  {
-    input: 'src/worker.ts',
-    output: {
-      sourcemap: true,
-      format: 'esm',
-      name: 'app',
-      file: 'public/worker.js',
-      plugins: [
-        // terser()
-      ]
-    },
-    plugins: [
-      rust({
-        inlineWasm: true // include in worker
-      }),
-      json(),
-      resolve({
-        browser: true,
-        dedupe: ['svelte']
-      }),
-      commonjs(),
-      globals(),
-      builtins(),
-      typescript()
-      // terser()
     ],
     watch: {
       clearScreen: false
